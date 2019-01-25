@@ -53,3 +53,5 @@ for point in range(1, n_points + 1):
     for item in wf.amplitudes:
         f.write("%s\n" % item)
     f.close()
+
+    print(success)
