@@ -49,6 +49,9 @@ geometry = [('H', (0., 0., 0.)), ('H', (0., 0., 0.7414))]
 molecule = MolecularData(geometry, basis, spin, description="0.7414")
 molecule.load()
 
+print(molecule.nuclear_repulsion)
+
+
 # Use a Jordan-Wigner encoding, and compress to remove 0 imaginary components
 qubit_hamiltonian = jordan_wigner(molecule.get_molecular_hamiltonian())
 qubit_hamiltonian.compress()
