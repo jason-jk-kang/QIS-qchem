@@ -66,8 +66,7 @@ for point in range(1, n_points + 1):
 
     # Generate and populate instance of MolecularData.
     molecule = MolecularData(geometry, basis, spin, description=str(round(bond_length, 2)))
-    molecule.load()
-
+    
     # Get the Hamiltonian in an active space.
     molecular_hamiltonian = molecule.get_molecular_hamiltonian(
         occupied_indices=range(active_space_start),

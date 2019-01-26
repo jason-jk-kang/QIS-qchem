@@ -35,6 +35,7 @@ def energy_objective(packed_amplitudes):
     compiler_engine.flush()
     return energy
 
+
 # Load saved file for H2 + H.
 basis = 'sto-3g'
 spin = 1
