@@ -70,10 +70,13 @@ for point in range(1, n_points + 1):
     molecule = MolecularData(geometry, basis, spin, description=str(round(bond_length, 2)))
 
     # Get the Hamiltonian in an active space.
-    molecular_hamiltonian = molecule.get_molecular_hamiltonian()
+    molecular_hamiltonian = molecule.get_molecular_hamiltonian(
+        occupied_indices=range(active_space_start),
+        active_indices=range(active_space_start, active_space_stop))
 
     # Map operator to fermions and qubits.
-    qubit_hamiltonian = jordan_wigner(molecular_hamiltonian)
+    fermion_hamiltonian = get_fermion_operator(molecular_hamiltonian)
+    qubit_hamiltonian = jordan_wigner(fermion_hamiltonian)
 
     # compress removes 0 entries. qubit_hamiltonian is a qubit_operator
     qubit_hamiltonian.compress()
