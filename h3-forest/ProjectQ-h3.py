@@ -1,13 +1,3 @@
-import os
-
-from openfermion.hamiltonians import MolecularData
-from openfermion.transforms import get_fermion_operator, get_sparse_operator, jordan_wigner
-from openfermion.utils import get_ground_state
-from forestopenfermion import exponentiate
-from pyquil.quil import Program
-from pyquil.api import QVMConnection, WavefunctionSimulator
-from pyquil.gates import *
-
 import numpy
 import scipy
 import scipy.linalg
@@ -20,7 +10,7 @@ from openfermion.config import *
 from openfermionprojectq import *
 
 from openfermion.hamiltonians import MolecularData
-from openfermion.transforms import jordan_wigner
+from openfermion.transforms import jordan_wigner, get_fermion_operator, get_sparse_operator
 from openfermion.utils import uccsd_singlet_paramsize
 
 from projectq.ops import X, All, Measure
