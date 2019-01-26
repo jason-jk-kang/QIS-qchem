@@ -9,20 +9,7 @@ from openfermion.transforms import jordan_wigner
 from openfermion.utils import uccsd_singlet_paramsize
 from projectq.ops import X, All, Measure
 from projectq.backends import CommandPrinter, CircuitDrawer
-# Load saved file for H2 + H.
-basis = 'sto-3g'
-spin = 1
-# Set Hamiltonian parameters.
-active_space_start = 1
-active_space_stop = 3
-geometry = [('H', (0., 0., 0.)), ('H', (0., 0., 0.7414))]
-# Generate and populate instance of MolecularData.
-molecule = MolecularData(geometry, basis, spin, description="0.7414")
-molecule.load()
-# Use a Jordan-Wigner encoding, and compress to remove 0 imaginary components
-qubit_hamiltonian = jordan_wigner(molecule.get_molecular_hamiltonian())
-qubit_hamiltonian.compress()
-compiler_engine = uccsd_trotter_engine()
+
 def energy_objective(packed_amplitudes):
     """Evaluate the energy of a UCCSD singlet wavefunction with packed_amplitudes
     Args:
@@ -47,9 +34,29 @@ def energy_objective(packed_amplitudes):
     All(Measure) | wavefunction
     compiler_engine.flush()
     return energy
+
+# Load saved file for H2 + H.
+basis = 'sto-3g'
+spin = 1
+
+# Set Hamiltonian parameters.
+active_space_start = 1
+active_space_stop = 3
+geometry = [('H', (0., 0., 0.)), ('H', (0., 0., 0.7414))]
+
+# Generate and populate instance of MolecularData.
+molecule = MolecularData(geometry, basis, spin, description="0.7414")
+molecule.load()
+
+# Use a Jordan-Wigner encoding, and compress to remove 0 imaginary components
+qubit_hamiltonian = jordan_wigner(molecule.get_molecular_hamiltonian())
+qubit_hamiltonian.compress()
+compiler_engine = uccsd_trotter_engine()
+
 n_amplitudes = uccsd_singlet_paramsize(molecule.n_qubits, molecule.n_electrons)
 initial_amplitudes = [0, 0.05677]
 initial_energy = energy_objective(initial_amplitudes)
+
 # Run VQE Optimization to find new CCSD parameters
 opt_result = minimize(energy_objective, initial_amplitudes,
                       method="CG", options={'disp':True})
