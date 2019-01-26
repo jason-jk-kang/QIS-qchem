@@ -73,8 +73,7 @@ for point in range(1, n_points + 1):
     molecular_hamiltonian = molecule.get_molecular_hamiltonian()
 
     # Map operator to fermions and qubits.
-    fermion_hamiltonian = get_fermion_operator(molecular_hamiltonian)
-    qubit_hamiltonian = jordan_wigner(fermion_hamiltonian)
+    qubit_hamiltonian = jordan_wigner(molecular_hamiltonian)
 
     # compress removes 0 entries. qubit_hamiltonian is a qubit_operator
     qubit_hamiltonian.compress()
