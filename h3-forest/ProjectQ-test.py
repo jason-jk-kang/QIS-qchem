@@ -73,7 +73,8 @@ opt_result = minimize(energy_objective, initial_amplitudes,
                       method="CG", options={'disp':True})
 
 opt_energy, opt_amplitudes = opt_result.fun, opt_result.x
-print("\nOptimal UCCSD Singlet Energy: {}".format(opt_energy))
+print("\n Results for {}:".format(molecule.name))
+print("Optimal UCCSD Singlet Energy: {}".format(opt_energy))
 print("Optimal UCCSD Singlet Amplitudes: {}".format(opt_amplitudes))
 print("Classical CCSD Energy: {} Hartrees".format(molecule.ccsd_energy))
 print("Exact FCI Energy: {} Hartrees".format(molecule.fci_energy))
