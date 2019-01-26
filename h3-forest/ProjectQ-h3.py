@@ -1,5 +1,17 @@
 import os
 
+from openfermion.hamiltonians import MolecularData
+from openfermion.transforms import get_fermion_operator, get_sparse_operator, jordan_wigner
+from openfermion.utils import get_ground_state
+from forestopenfermion import exponentiate
+from pyquil.quil import Program
+from pyquil.api import QVMConnection, WavefunctionSimulator
+from pyquil.gates import *
+
+import numpy
+import scipy
+import scipy.linalg
+
 from numpy import array, concatenate, zeros
 from numpy.random import randn
 from scipy.optimize import minimize
@@ -66,7 +78,7 @@ for point in range(1, n_points + 1):
 
     # Generate and populate instance of MolecularData.
     molecule = MolecularData(geometry, basis, spin, description=str(round(bond_length, 2)))
-    
+
     # Get the Hamiltonian in an active space.
     molecular_hamiltonian = molecule.get_molecular_hamiltonian(
         occupied_indices=range(active_space_start),
