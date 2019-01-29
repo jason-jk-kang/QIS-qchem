@@ -48,7 +48,7 @@ for point in range(1, n_points + 1):
     print('The {} has wavefunction amplitudes of'.format(molecule.name))
     print(wf.amplitudes)
 
-    f = open('qvm_results.txt', 'a')
+    f = open('h3-wavefunction-amplitudes.txt', 'a')
     f.write('The {} has wavefunction aplitudes of'.format(molecule.name))
     for item in wf.amplitudes:
         f.write("%s\n" % item)

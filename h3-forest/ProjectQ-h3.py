@@ -16,6 +16,9 @@ from openfermion.utils import uccsd_singlet_paramsize
 from projectq.ops import X, All, Measure
 from projectq.backends import CommandPrinter, CircuitDrawer
 
+import matplotlib.pyplot as plt
+
+
 def energy_objective(packed_amplitudes):
     """Evaluate the energy of a UCCSD singlet wavefunction with packed_amplitudes
     Args:
@@ -46,16 +49,15 @@ def energy_objective(packed_amplitudes):
     return energy
 
 
-
-
-
-
 # Load saved file for H2 + H.
 basis = 'sto-3g'
 spin = 2
-n_points = 40
+n_points = 10
 bond_length_interval = 3.0 / n_points
 bond_lengths = []
+
+fci_energies = []
+UCCSD_energies = []
 
 # Set Hamiltonian parameters.
 active_space_start = 1
@@ -85,7 +87,7 @@ for point in range(1, n_points + 1):
     compiler_engine = uccsd_trotter_engine()
 
     n_amplitudes = uccsd_singlet_paramsize(molecule.n_qubits, molecule.n_electrons)
-    initial_amplitudes = [0, 0.05677]
+    initial_amplitudes = [0.01] * n_amplitudes
     initial_energy = energy_objective(initial_amplitudes)
 
     # Run VQE Optimization to find new CCSD parameters
@@ -93,9 +95,46 @@ for point in range(1, n_points + 1):
                           method="CG", options={'disp':True})
 
     opt_energy, opt_amplitudes = opt_result.fun, opt_result.x
+
+    fci_energies += [float(molecule.fci_energy)]
+    UCCSD_energies += [float(opt_energy)]
+
+    print(fci_energies)
+    print(UCCSD_energies)
+    print(type(fci_energies))
+    print(type(UCCSD_energies))
+
+    # write results into txt file
+    f = open('h3-results.txt', 'a')
+    f.write("Results for {}: \n".format(molecule.name))
+
+    f.write("Optimal UCCSD Singlet Energy: {} \n".format(str(opt_energy)))
+    f.write("Optimal UCCSD Singlet Amplitudes: ")
+    for item in opt_amplitudes:
+        f.write("{} ".format(str(item)))
+    f.write("\n")
+
+    f.write("Classical CCSD Energy: {} Hartrees \n".format(str(float(item))))
+    f.write("Exact FCI Energy: {} Hartrees \n".format(str(float(molecule.fci_energy))))
+    f.write("Initial Energy of UCCSD with CCSD amplitudes: {} Hartrees \n\n".format(str(float(initial_energy))))
+
+    f.close
+
     print("\nResults for {}:".format(molecule.name))
     print("Optimal UCCSD Singlet Energy: {}".format(opt_energy))
     print("Optimal UCCSD Singlet Amplitudes: {}".format(opt_amplitudes))
     print("Classical CCSD Energy: {} Hartrees".format(molecule.ccsd_energy))
     print("Exact FCI Energy: {} Hartrees".format(molecule.fci_energy))
-    print("Initial Energy of UCCSD with CCSD amplitudes: {} Hartrees".format(initial_energy))
+    print("Initial Energy of UCCSD with CCSD amplitudes: {} Hartrees\n\n".format(initial_energy))
+
+
+# plot energies
+plt.figure(0)
+plt.plot(bond_lengths, fci_energies, 'x-')
+plt.plot(bond_lengths, UCCSD_energies, 'o-')
+plt.ylabel('Energy in Hartree')
+plt.xlabel('Bond length in angstrom')
+
+plt.savefig("VQE-h3-graph", dpi=400, orientation='portrait')
+
+plt.show()

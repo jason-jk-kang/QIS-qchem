@@ -23,6 +23,7 @@ def energy_objective(packed_amplitudes):
     wavefunction = compiler_engine.allocate_qureg(molecule.n_qubits)
     for i in range(molecule.n_electrons):
         X | wavefunction[i]
+
     # Build the circuit and act it on the wavefunction
     evolution_operator = uccsd_singlet_evolution(packed_amplitudes,
                                                  molecule.n_qubits,
@@ -36,7 +37,7 @@ def energy_objective(packed_amplitudes):
     return energy
 
 
-# Load saved file for H2 + H.
+# Load saved file for H2.
 basis = 'sto-3g'
 spin = 1
 
@@ -48,8 +49,6 @@ geometry = [('H', (0., 0., 0.)), ('H', (0., 0., 0.7414))]
 # Generate and populate instance of MolecularData.
 molecule = MolecularData(geometry, basis, spin, description="0.7414")
 molecule.load()
-
-print(molecule.nuclear_repulsion)
 
 
 # Use a Jordan-Wigner encoding, and compress to remove 0 imaginary components
@@ -66,7 +65,7 @@ opt_result = minimize(energy_objective, initial_amplitudes,
                       method="CG", options={'disp':True})
 
 opt_energy, opt_amplitudes = opt_result.fun, opt_result.x
-print("\nOptimal UCCSD Singlet Energy: {}".format(opt_energy))
+
 print("\n Results for {}:".format(molecule.name))
 print("Optimal UCCSD Singlet Energy: {}".format(opt_energy))
 print("Optimal UCCSD Singlet Amplitudes: {}".format(opt_amplitudes))
