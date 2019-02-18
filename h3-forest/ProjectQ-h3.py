@@ -66,7 +66,6 @@ UCCSD_energies = []
 active_space_start = 1
 active_space_stop = 3
 
-<<<<<<< HEAD
 # Set calculation parameters.
 run_scf = 1
 run_mp2 = 1
@@ -76,8 +75,7 @@ run_fci = 1
 delete_input = True
 delete_output = True
 
-=======
->>>>>>> c928cb69bf176fcd3819445861eef252b7d09fd6
+
 f = open('ProjectQ-h3-results.txt', 'w')
 
 for point in range(1, n_points + 1):

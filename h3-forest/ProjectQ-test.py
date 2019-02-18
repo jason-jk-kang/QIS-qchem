@@ -43,7 +43,6 @@ def energy_objective(packed_amplitudes):
 # Load saved file for H3.
 basis = 'sto-3g'
 spin = 2
-<<<<<<< HEAD
 
 # Set calculation parameters.
 run_scf = 1
@@ -53,8 +52,7 @@ run_ccsd = 0
 run_fci = 1
 delete_input = True
 delete_output = True
-=======
->>>>>>> c928cb69bf176fcd3819445861eef252b7d09fd6
+
 
 # Set Hamiltonian parameters.
 active_space_start = 1
@@ -63,7 +61,6 @@ geometry = [('H', (0., 0., 0.)), ('H', (0., 0., 0.7414)), ('H', (0., 0., 3.3))]
 
 # Generate and populate instance of MolecularData.
 molecule = MolecularData(geometry, basis, spin, description="h3")
-<<<<<<< HEAD
 
 molecule = run_pyscf(molecule,
                      run_scf=run_scf,
@@ -72,10 +69,7 @@ molecule = run_pyscf(molecule,
                      run_ccsd=run_ccsd,
                      run_fci=run_fci)
 
-=======
-molecule.load()
 
->>>>>>> c928cb69bf176fcd3819445861eef252b7d09fd6
 # Use a Jordan-Wigner encoding, and compress to remove 0 imaginary components
 qubit_hamiltonian = jordan_wigner(molecule.get_molecular_hamiltonian())
 qubit_hamiltonian.compress()
