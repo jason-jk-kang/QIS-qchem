@@ -1,3 +1,6 @@
+#This I use to test QVMConnection
+
+
 from openfermion.hamiltonians import MolecularData
 from openfermion.transforms import get_fermion_operator, get_sparse_operator, jordan_wigner
 from openfermion.utils import get_ground_state
@@ -5,6 +8,7 @@ from forestopenfermion import exponentiate
 from pyquil.quil import Program
 from pyquil.api import QVMConnection, WavefunctionSimulator
 from pyquil.gates import *
+from openfermionpyscf import run_pyscf
 
 import numpy
 import scipy
@@ -21,14 +25,28 @@ bond_lengths = []
 active_space_start = 1
 active_space_stop = 3
 
+# Set calculation parameters.
+run_scf = 1
+run_mp2 = 1
+run_cisd = 0
+run_ccsd = 0
+run_fci = 1
+delete_input = True
+delete_output = True
+
 for point in range(1, n_points + 1):
     bond_length = bond_length_interval * float(point) + 0.2
     bond_lengths += [bond_length]
     geometry = [('H', (0., 0., 0.)), ('H', (0., 0., bond_length)), ('H', (0., 0., 3.3))]
 
-    # Generate and populate instance of MolecularData.
     molecule = MolecularData(geometry, basis, spin, description=str(round(bond_length, 2)))
-    molecule.load()
+
+    molecule = run_pyscf(molecule,
+                         run_scf=run_scf,
+                         run_mp2=run_mp2,
+                         run_cisd=run_cisd,
+                         run_ccsd=run_ccsd,
+                         run_fci=run_fci)
 
     # Get the Hamiltonian in an active space.
     molecular_hamiltonian = molecule.get_molecular_hamiltonian(
@@ -54,4 +72,4 @@ for point in range(1, n_points + 1):
         f.write("%s\n" % item)
     f.close()
 
-    print(success)
+    print("success")

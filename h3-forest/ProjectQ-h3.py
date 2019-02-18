@@ -18,6 +18,9 @@ from projectq.backends import CommandPrinter, CircuitDrawer
 
 import matplotlib.pyplot as plt
 
+from openfermionpyscf import run_pyscf
+
+
 
 def energy_objective(packed_amplitudes):
     """Evaluate the energy of a UCCSD singlet wavefunction with packed_amplitudes
@@ -52,7 +55,7 @@ def energy_objective(packed_amplitudes):
 # Load saved file for H2 + H.
 basis = 'sto-3g'
 spin = 2
-n_points = 10
+n_points = 40
 bond_length_interval = 3.0 / n_points
 bond_lengths = []
 
@@ -63,6 +66,17 @@ UCCSD_energies = []
 active_space_start = 1
 active_space_stop = 3
 
+# Set calculation parameters.
+run_scf = 1
+run_mp2 = 1
+run_cisd = 0
+run_ccsd = 0
+run_fci = 1
+delete_input = True
+delete_output = True
+
+f = open('ProjectQ-h3-results.txt', 'w')
+
 for point in range(1, n_points + 1):
     bond_length = bond_length_interval * float(point) + 0.2
     bond_lengths += [bond_length]
@@ -70,7 +84,14 @@ for point in range(1, n_points + 1):
 
     # Generate and populate instance of MolecularData.
     molecule = MolecularData(geometry, basis, spin, description=str(round(bond_length, 2)))
-    molecule.load()
+
+
+    molecule = run_pyscf(molecule,
+                         run_scf=run_scf,
+                         run_mp2=run_mp2,
+                         run_cisd=run_cisd,
+                         run_ccsd=run_ccsd,
+                         run_fci=run_fci)
 
     # Get the Hamiltonian in an active space.
     molecular_hamiltonian = molecule.get_molecular_hamiltonian(
@@ -105,7 +126,7 @@ for point in range(1, n_points + 1):
     print(type(UCCSD_energies))
 
     # write results into txt file
-    f = open('h3-results.txt', 'a')
+    f = open('ProjectQ-h3-results.txt', 'a')
     f.write("Results for {}: \n".format(molecule.name))
 
     f.write("Optimal UCCSD Singlet Energy: {} \n".format(str(opt_energy)))
@@ -128,6 +149,7 @@ for point in range(1, n_points + 1):
     print("Initial Energy of UCCSD with CCSD amplitudes: {} Hartrees\n\n".format(initial_energy))
 
 
+
 # plot energies
 plt.figure(0)
 plt.plot(bond_lengths, fci_energies, 'x-')
@@ -135,6 +157,6 @@ plt.plot(bond_lengths, UCCSD_energies, 'o-')
 plt.ylabel('Energy in Hartree')
 plt.xlabel('Bond length in angstrom')
 
-plt.savefig("VQE-h3-graph", dpi=400, orientation='portrait')
+plt.savefig("ProjectQ-h3-graph", dpi=400, orientation='portrait')
 
 plt.show()
