@@ -52,7 +52,7 @@ def energy_objective(packed_amplitudes):
 # Load saved file for H2 + H.
 basis = 'sto-3g'
 spin = 2
-n_points = 10
+n_points = 40
 bond_length_interval = 3.0 / n_points
 bond_lengths = []
 
@@ -62,6 +62,8 @@ UCCSD_energies = []
 # Set Hamiltonian parameters.
 active_space_start = 1
 active_space_stop = 3
+
+f = open('ProjectQ-h3-results.txt', 'w')
 
 for point in range(1, n_points + 1):
     bond_length = bond_length_interval * float(point) + 0.2
@@ -105,7 +107,7 @@ for point in range(1, n_points + 1):
     print(type(UCCSD_energies))
 
     # write results into txt file
-    f = open('h3-results.txt', 'a')
+    f = open('ProjectQ-h3-results.txt', 'a')
     f.write("Results for {}: \n".format(molecule.name))
 
     f.write("Optimal UCCSD Singlet Energy: {} \n".format(str(opt_energy)))
@@ -126,6 +128,7 @@ for point in range(1, n_points + 1):
     print("Classical CCSD Energy: {} Hartrees".format(molecule.ccsd_energy))
     print("Exact FCI Energy: {} Hartrees".format(molecule.fci_energy))
     print("Initial Energy of UCCSD with CCSD amplitudes: {} Hartrees\n\n".format(initial_energy))
+
 
 
 # plot energies
