@@ -1,0 +1,280 @@
+Results for H3_sto-3g_doublet_0.28: 
+Optimal UCCSD Singlet Energy: -0.932302317295844 
+Optimal UCCSD Singlet Amplitudes: 3.775243631700609e-07 -2.0215642631399713e-06 -5.3303659426558744e-08 0.037287931873165814 1.5707968647893076 
+Classical CCSD Energy: 1.5707968647893076 Hartrees 
+Exact FCI Energy: -0.9399089260263906 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: 0.9684927598382125 Hartrees 
+
+Results for H3_sto-3g_doublet_0.35: 
+Optimal UCCSD Singlet Energy: -1.2469778848235418 
+Optimal UCCSD Singlet Amplitudes: -2.7939236678002313e-07 7.72212795234355e-06 -2.458225377136578e-07 0.054170933536123615 1.5707965661141343 
+Classical CCSD Energy: 1.5707965661141343 Hartrees 
+Exact FCI Energy: -1.255792481226138 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: 0.5014177352312087 Hartrees 
+
+Results for H3_sto-3g_doublet_0.42: 
+Optimal UCCSD Singlet Energy: -1.4165692987662781 
+Optimal UCCSD Singlet Amplitudes: -7.932686849835679e-08 6.204756512363749e-06 2.9543927707139622e-09 0.08014323887110951 1.5707964347707648 
+Classical CCSD Energy: 1.5707964347707648 Hartrees 
+Exact FCI Energy: -1.4268964008293148 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: 0.18840409447747636 Hartrees 
+
+Results for H3_sto-3g_doublet_0.5: 
+Optimal UCCSD Singlet Energy: -1.2030666207142446 
+Optimal UCCSD Singlet Amplitudes: -0.02248190786033882 1.5707790934660264 0.0004580462241102876 0.0020023580885696725 2.087021170369922 
+Classical CCSD Energy: 2.087021170369922 Hartrees 
+Exact FCI Energy: -1.5216362151039315 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.0334008864602563 Hartrees 
+
+Results for H3_sto-3g_doublet_0.57: 
+Optimal UCCSD Singlet Energy: -1.5580165156947603 
+Optimal UCCSD Singlet Amplitudes: 4.808950230457459e-07 3.1415912340045566 7.853981827819333 3.4659287946583524 7.853981811595288 
+Classical CCSD Energy: 7.853981811595288 Hartrees 
+Exact FCI Energy: -1.5723608069643897 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.19473603421182611 Hartrees 
+
+Results for H3_sto-3g_doublet_0.65: 
+Optimal UCCSD Singlet Energy: -1.5794027793957945 
+Optimal UCCSD Singlet Amplitudes: 4.9963389983535076e-08 5.933811916565744e-06 1.5707957910090302 0.06620869514401176 1.570796641072766 
+Classical CCSD Energy: 1.570796641072766 Hartrees 
+Exact FCI Energy: -1.5963042351982208 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.31326302220912267 Hartrees 
+
+Results for H3_sto-3g_doublet_0.73: 
+Optimal UCCSD Singlet Energy: -1.5836999664044602 
+Optimal UCCSD Singlet Amplitudes: -1.1406078370846983e-07 -2.441836906499005e-07 1.5707963097323798 0.11062192590473252 1.570795990128041 
+Classical CCSD Energy: 1.570795990128041 Hartrees 
+Exact FCI Energy: -1.603565128035238 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.4005688738073845 Hartrees 
+
+Results for H3_sto-3g_doublet_0.8: 
+Optimal UCCSD Singlet Energy: -1.5771459927119653 
+Optimal UCCSD Singlet Amplitudes: 1.9530096154162244e-06 1.3569242314528487e-05 1.5707957622177 0.43434417578850193 1.5708001653250432 
+Classical CCSD Energy: 1.5708001653250432 Hartrees 
+Exact FCI Energy: -1.6004199263636436 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.4649081839862242 Hartrees 
+
+Results for H3_sto-3g_doublet_0.88: 
+Optimal UCCSD Singlet Energy: -1.5636754983125398 
+Optimal UCCSD Singlet Amplitudes: 1.8218894849632944e-06 3.141591416389013 1.5707961933359187 0.6274632698578451 1.5707965983528964 
+Classical CCSD Energy: 1.5707965983528964 Hartrees 
+Exact FCI Energy: -1.590852676321921 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.5122905761890741 Hartrees 
+
+Results for H3_sto-3g_doublet_0.95: 
+Optimal UCCSD Singlet Energy: -1.5457690001655344 
+Optimal UCCSD Singlet Amplitudes: 1.8746136014853172e-06 3.141604674079088 1.5707963633885085 0.24695262334021423 1.5707960681572848 
+Classical CCSD Energy: 1.5707960681572848 Hartrees 
+Exact FCI Energy: -1.577404589069794 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.5470150700612062 Hartrees 
+
+Results for H3_sto-3g_doublet_1.02: 
+Optimal UCCSD Singlet Energy: -1.525008533278752 
+Optimal UCCSD Singlet Amplitudes: 1.3862911007355203e-06 3.1415770963344487 1.570796177754152 0.7511246974712285 1.5707961589634465 
+Classical CCSD Energy: 1.5707961589634465 Hartrees 
+Exact FCI Energy: -1.561725414717763 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.5720792274338699 Hartrees 
+
+Results for H3_sto-3g_doublet_1.1: 
+Optimal UCCSD Singlet Energy: -1.5024486979131968 
+Optimal UCCSD Singlet Amplitudes: -4.705794081757696e-06 3.1415854558900467 1.5707965142698483 1.0517477900597572 1.5707955142562962 
+Classical CCSD Energy: 1.5707955142562962 Hartrees 
+Exact FCI Energy: -1.5449373598434741 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.5895539726567662 Hartrees 
+
+Results for H3_sto-3g_doublet_1.18: 
+Optimal UCCSD Singlet Energy: -1.4788438023262698 
+Optimal UCCSD Singlet Amplitudes: -7.676079257538461e-07 3.1415965773126446 1.5707963535512848 1.0295546987522775 1.5707955245900433 
+Classical CCSD Energy: 1.5707955245900433 Hartrees 
+Exact FCI Energy: -1.5278558517768839 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.6008986796186279 Hartrees 
+
+Results for H3_sto-3g_doublet_1.25: 
+Optimal UCCSD Singlet Energy: -1.4547710967658685 
+Optimal UCCSD Singlet Amplitudes: -5.192493821978426e-07 -6.122750241536146e-06 1.5707966578273178 2.091956281753411 1.5708001098739885 
+Classical CCSD Energy: 1.5708001098739885 Hartrees 
+Exact FCI Energy: -1.5111120344223692 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.607190678557217 Hartrees 
+
+Results for H3_sto-3g_doublet_1.32: 
+Optimal UCCSD Singlet Energy: -1.430692551731676 
+Optimal UCCSD Singlet Amplitudes: 6.4050334092198085e-06 -6.936443902103466e-06 1.5707965707364206 1.4272325669064931 1.5707983652381767 
+Classical CCSD Energy: 1.5707983652381767 Hartrees 
+Exact FCI Energy: -1.4952275814987002 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.609274669267636 Hartrees 
+
+Results for H3_sto-3g_doublet_1.4: 
+Optimal UCCSD Singlet Energy: -1.4069892738477374 
+Optimal UCCSD Singlet Amplitudes: -1.607443008995416e-06 -5.440582728978993e-06 1.570796489860173 2.694374787744183 1.5707973827589916 
+Classical CCSD Energy: 1.5707973827589916 Hartrees 
+Exact FCI Energy: -1.4806933669347262 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.6078517945805519 Hartrees 
+
+Results for H3_sto-3g_doublet_1.47: 
+Optimal UCCSD Singlet Energy: -1.3839902647035163 
+Optimal UCCSD Singlet Amplitudes: -3.3963060772740244e-06 -1.007068874783437e-05 1.5707953266287933 1.3765180282951321 1.5707958989054744 
+Classical CCSD Energy: 1.5707958989054744 Hartrees 
+Exact FCI Energy: -1.4681119714875412 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.6035589544851435 Hartrees 
+
+Results for H3_sto-3g_doublet_1.55: 
+Optimal UCCSD Singlet Energy: -1.3620095513895483 
+Optimal UCCSD Singlet Amplitudes: 2.9849542922988705e-06 9.268407637004997e-06 1.5707966710626726 1.2675198308004114 1.5707986154790952 
+Classical CCSD Energy: 1.5707986154790952 Hartrees 
+Exact FCI Energy: -1.4584711924135099 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.5970448471369029 Hartrees 
+
+Results for H3_sto-3g_doublet_1.62: 
+Optimal UCCSD Singlet Energy: -1.068220502235537 
+Optimal UCCSD Singlet Amplitudes: 9.708703108855893e-06 2.423224191560176e-06 0.7853996031651801 0.010129334879522348 -5.430416183577256e-06 
+Classical CCSD Energy: -5.430416183577256e-06 Hartrees 
+Exact FCI Energy: -1.4534090900499517 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.6068971249687718 Hartrees 
+
+Results for H3_sto-3g_doublet_1.7: 
+Optimal UCCSD Singlet Energy: -1.0641382671355235 
+Optimal UCCSD Singlet Amplitudes: 2.5155584949718607e-06 -4.470479561366722e-06 0.7853993184048258 0.00636363619814682 -2.4848291364394705e-06 
+Classical CCSD Energy: -2.4848291364394705e-06 Hartrees 
+Exact FCI Energy: -1.4544686681243588 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.6047411061351733 Hartrees 
+
+Results for H3_sto-3g_doublet_1.77: 
+Optimal UCCSD Singlet Energy: -1.369202935957318 
+Optimal UCCSD Singlet Amplitudes: -2.608027576142239e-06 5.644282320076478e-07 1.5707964322061572 1.4679389524129518 1.5707983082481651 
+Classical CCSD Energy: 1.5707983082481651 Hartrees 
+Exact FCI Energy: -1.4612702069073848 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.5994181534007692 Hartrees 
+
+Results for H3_sto-3g_doublet_1.85: 
+Optimal UCCSD Singlet Energy: -1.3915591818223687 
+Optimal UCCSD Singlet Amplitudes: -3.8152716433704324e-07 5.815209134954199e-06 1.5707962836451563 1.4728439446585357 1.5707971726886 
+Classical CCSD Energy: 1.5707971726886 Hartrees 
+Exact FCI Energy: -1.4720397585187888 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.6052703797774703 Hartrees 
+
+Results for H3_sto-3g_doublet_1.92: 
+Optimal UCCSD Singlet Energy: -1.4148276320281667 
+Optimal UCCSD Singlet Amplitudes: 4.546367710409654e-07 3.1415934686316067 1.5707963358608272 1.391594037606904 1.5707963812673227 
+Classical CCSD Energy: 1.5707963812673227 Hartrees 
+Exact FCI Energy: -1.4853555043984468 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.608675449423498 Hartrees 
+
+Results for H3_sto-3g_doublet_2.0: 
+Optimal UCCSD Singlet Energy: -1.438694498763176 
+Optimal UCCSD Singlet Amplitudes: -2.575241205622225e-06 3.141591721801556 1.5707960522082034 1.5349653426786294 1.5707965132007473 
+Classical CCSD Energy: 1.5707965132007473 Hartrees 
+Exact FCI Energy: -1.5003971124636855 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.6090018936621957 Hartrees 
+
+Results for H3_sto-3g_doublet_2.08: 
+Optimal UCCSD Singlet Energy: -1.4628168573204299 
+Optimal UCCSD Singlet Amplitudes: 2.9470522868906234e-06 3.1415916823794072 1.570796146555804 0.6899269438588443 1.5707968224971796 
+Classical CCSD Energy: 1.5707968224971796 Hartrees 
+Exact FCI Energy: -1.516622059461679 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.6055990560294635 Hartrees 
+
+Results for H3_sto-3g_doublet_2.15: 
+Optimal UCCSD Singlet Energy: -1.4867897949032722 
+Optimal UCCSD Singlet Amplitudes: 4.988344855624543e-07 3.1415819557998446 1.5707963776389744 4.15326582747627 1.570798347131597 
+Classical CCSD Energy: 1.570798347131597 Hartrees 
+Exact FCI Energy: -1.533540452872995 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.5977258364777754 Hartrees 
+
+Results for H3_sto-3g_doublet_2.23: 
+Optimal UCCSD Singlet Energy: -1.5101175291916331 
+Optimal UCCSD Singlet Amplitudes: 3.2820805795702804e-06 3.1415923776406784 1.5707968460096535 1.4370021589615694 1.570793544670135 
+Classical CCSD Energy: 1.570793544670135 Hartrees 
+Exact FCI Energy: -1.5506015916294922 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.5844725633515683 Hartrees 
+
+Results for H3_sto-3g_doublet_2.3: 
+Optimal UCCSD Singlet Energy: -1.5321728699984754 
+Optimal UCCSD Singlet Amplitudes: 4.832739961564853e-07 3.1415811471270736 1.5707961282633556 0.35730625191299287 1.5707943340232156 
+Classical CCSD Energy: 1.5707943340232156 Hartrees 
+Exact FCI Energy: -1.567122520031631 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.5646547744124645 Hartrees 
+
+Results for H3_sto-3g_doublet_2.38: 
+Optimal UCCSD Singlet Energy: -1.5521193364188823 
+Optimal UCCSD Singlet Amplitudes: 8.118863462899409e-07 3.1415851313063845 1.5707964362444096 0.16042861692524232 1.5707945353860495 
+Classical CCSD Energy: 1.5707945353860495 Hartrees 
+Exact FCI Energy: -1.5822029946358223 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.5366391449653649 Hartrees 
+
+Results for H3_sto-3g_doublet_2.45: 
+Optimal UCCSD Singlet Energy: -1.5687581148494645 
+Optimal UCCSD Singlet Amplitudes: 3.2781792376737984e-07 3.1415984831804296 1.5707962813644305 0.8809544728533939 1.570796753519318 
+Classical CCSD Energy: 1.570796753519318 Hartrees 
+Exact FCI Energy: -1.5945757271250764 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.49808461318594827 Hartrees 
+
+Results for H3_sto-3g_doublet_2.52: 
+Optimal UCCSD Singlet Energy: -1.5802570213302207 
+Optimal UCCSD Singlet Amplitudes: -2.879570891088879e-08 -8.296786248109462e-07 1.5707966787675527 0.23241522153381705 1.5707964768724418 
+Classical CCSD Energy: 1.5707964768724418 Hartrees 
+Exact FCI Energy: -1.6023424450297128 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.445603263759953 Hartrees 
+
+Results for H3_sto-3g_doublet_2.6: 
+Optimal UCCSD Singlet Energy: -1.2798891830084804 
+Optimal UCCSD Singlet Amplitudes: -0.05164325226674111 1.5707971472449895 3.143583490326212 0.0010489999221033068 2.4287727595457933 
+Classical CCSD Energy: 2.4287727595457933 Hartrees 
+Exact FCI Energy: -1.6025533449582068 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.37437354320295047 Hartrees 
+
+Results for H3_sto-3g_doublet_2.68: 
+Optimal UCCSD Singlet Energy: -1.574570481221855 
+Optimal UCCSD Singlet Amplitudes: 1.0729609071011066e-06 -1.6110505185923666e-05 1.5707958262503905 0.08542605132033546 1.570792972550842 
+Classical CCSD Energy: 1.570792972550842 Hartrees 
+Exact FCI Energy: -1.5905760334790542 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.27771067890164014 Hartrees 
+
+Results for H3_sto-3g_doublet_2.75: 
+Optimal UCCSD Singlet Energy: -1.2395444650410752 
+Optimal UCCSD Singlet Amplitudes: -0.027517756948732652 1.5707974707663437 0.0006507693905555796 0.00038672930764597775 3.3615271942462073 
+Classical CCSD Energy: 3.3615271942462073 Hartrees 
+Exact FCI Energy: -1.5590848340290373 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: -0.14642024129869996 Hartrees 
+
+Results for H3_sto-3g_doublet_2.83: 
+Optimal UCCSD Singlet Energy: -1.4846019196351325 
+Optimal UCCSD Singlet Amplitudes: 8.602737108066821e-07 -1.4735215276551924e-05 -4.3618925799854273e-07 0.14108620562700444 1.5707976848982275 
+Classical CCSD Energy: 1.5707976848982275 Hartrees 
+Exact FCI Energy: -1.496115144581996 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: 0.03267120257062058 Hartrees 
+
+Results for H3_sto-3g_doublet_2.9: 
+Optimal UCCSD Singlet Energy: -1.370871589473827 
+Optimal UCCSD Singlet Amplitudes: 3.1415921724196685 3.141583409497576 1.5707962709997663 -0.03679203726632322 4.712388702327975 
+Classical CCSD Energy: 4.712388702327975 Hartrees 
+Exact FCI Energy: -1.3806597374420173 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: 0.2804631840168355 Hartrees 
+
+Results for H3_sto-3g_doublet_2.98: 
+Optimal UCCSD Singlet Energy: -1.1634131025679002 
+Optimal UCCSD Singlet Amplitudes: 1.9178124268414432e-08 -9.375948667665438e-07 -9.224342827014647e-09 0.04320632275144935 1.5707961808461608 
+Classical CCSD Energy: 1.5707961808461608 Hartrees 
+Exact FCI Energy: -1.171791852977415 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: 0.6352254311548439 Hartrees 
+
+Results for H3_sto-3g_doublet_3.05: 
+Optimal UCCSD Singlet Energy: -0.7715435182901036 
+Optimal UCCSD Singlet Amplitudes: 6.283185376972428 9.424779459355356 3.1415925058770444 0.04083367354981316 10.9955739803737 
+Classical CCSD Energy: 10.9955739803737 Hartrees 
+Exact FCI Energy: -0.7788132134024495 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: 1.1801682741137993 Hartrees 
+
+Results for H3_sto-3g_doublet_3.12: 
+Optimal UCCSD Singlet Energy: 0.04811721909961182 
+Optimal UCCSD Singlet Amplitudes: 8.865600159577031e-08 -4.325213799566978e-06 -1.1200577419063253e-07 0.02452636338121982 1.5707954427547837 
+Classical CCSD Energy: 1.5707954427547837 Hartrees 
+Exact FCI Energy: 0.04166376997037391 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: 2.1436953428123573 Hartrees 
+
+Results for H3_sto-3g_doublet_3.2: 
+Optimal UCCSD Singlet Energy: 2.2493262907279297 
+Optimal UCCSD Singlet Amplitudes: 9.424778188853393 18.849560684552184 6.283185129704831 0.08236842717597907 20.420354282370997 
+Classical CCSD Energy: 20.420354282370997 Hartrees 
+Exact FCI Energy: 2.243399331504701 Hartrees 
+Initial Energy of UCCSD with CCSD amplitudes: 4.457021944385555 Hartrees 
+
