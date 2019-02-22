@@ -20,8 +20,6 @@ import matplotlib.pyplot as plt
 
 from openfermionpyscf import run_pyscf
 
-
-
 def energy_objective(packed_amplitudes):
     """Evaluate the energy of a UCCSD singlet wavefunction with packed_amplitudes
     Args:

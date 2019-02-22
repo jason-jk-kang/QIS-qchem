@@ -8,7 +8,7 @@ from openfermion.hamiltonians import MolecularData
 from openfermion.transforms import jordan_wigner
 from openfermion.utils import uccsd_singlet_paramsize
 from projectq.ops import X, All, Measure
-from projectq.backends import CommandPrinter, CircuitDrawer
+from projectq.backends import CommandPrinter, CircuitDrawer, IBMBackend
 
 from openfermionpyscf import run_pyscf
 
@@ -69,7 +69,6 @@ molecule = run_pyscf(molecule,
                      run_ccsd=run_ccsd,
                      run_fci=run_fci)
 
-
 # Use a Jordan-Wigner encoding, and compress to remove 0 imaginary components
 qubit_hamiltonian = jordan_wigner(molecule.get_molecular_hamiltonian())
 qubit_hamiltonian.compress()
@@ -92,18 +91,15 @@ print("Classical CCSD Energy: {} Hartrees".format(molecule.ccsd_energy))
 print("Exact FCI Energy: {} Hartrees".format(molecule.fci_energy))
 print("Initial Energy of UCCSD with CCSD amplitudes: {} Hartrees".format(initial_energy))
 
-
-
-
-
-compiler_engine = uccsd_trotter_engine(CommandPrinter())
+compiler_engine = uccsd_trotter_engine(IBMBackend(user="jason_kang@college.harvard.edu",
+                  password = "987412365"))
 wavefunction = compiler_engine.allocate_qureg(molecule.n_qubits)
 for i in range(molecule.n_electrons):
     X | wavefunction[i]
-
-# Build the circuit and act it on the wavefunction
-evolution_operator = uccsd_singlet_evolution(opt_amplitudes,
-                                             molecule.n_qubits,
-                                             molecule.n_electrons)
-evolution_operator | wavefunction
-compiler_engine.flush()
+    
+# # Build the circuit and act it on the wavefunction
+# evolution_operator = uccsd_singlet_evolution(opt_amplitudes,
+#                                              molecule.n_qubits,
+#                                              molecule.n_electrons)
+# evolution_operator | wavefunction
+# compiler_engine.flush()

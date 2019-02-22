@@ -1,5 +1,6 @@
 from openfermion.hamiltonians import MolecularData
 from openfermionpyscf import run_pyscf
+from pyscf import mp, fci
 
 # Set molecule parameters.
 basis = 'sto-3g'
