@@ -32,17 +32,22 @@ def energy_objective(packed_amplitudes):
                                                  molecule.n_qubits,
                                                  molecule.n_electrons)
     evolution_operator | wavefunction
-    compiler_engine.flush()
-    # Evaluate the energy and reset wavefunction
-    energy = compiler_engine.backend.get_expectation_value(wavefunction)
+
     All(Measure) | wavefunction
+
     compiler_engine.flush()
-    return energy
+
+    # Evaluate the energy and reset wavefunction
+    for i in range (molecule.n_qubits):
+        print("Measured {}".format(int(wavefunction[i])))
+
+    # energy = compiler_engine.backend.get_probabilities(wavefunction)
+    # return energy
 
 
 # Load saved file for H3.
 basis = 'sto-3g'
-spin = 1
+spin = 2
 
 # Set calculation parameters.
 run_scf = 1
@@ -72,27 +77,50 @@ molecule = run_pyscf(molecule,
 # Use a Jordan-Wigner encoding, and compress to remove 0 imaginary components
 qubit_hamiltonian = jordan_wigner(molecule.get_molecular_hamiltonian())
 qubit_hamiltonian.compress()
-compiler_engine = uccsd_trotter_engine(IBMBackend())
+compiler_engine = uccsd_trotter_engine(IBMBackend(user="jason_kang@college.harvard.edu",
+                                                  password="987412365"))
 
 n_amplitudes = uccsd_singlet_paramsize(molecule.n_qubits, molecule.n_electrons)
 initial_amplitudes = [0.01] * n_amplitudes
-initial_energy = energy_objective(initial_amplitudes)
+# initial_energy = energy_objective(initial_amplitudes)
 
-# Run VQE Optimization to find new CCSD parameters
-opt_result = minimize(energy_objective, initial_amplitudes,
-                      method="CG", options={'disp':True})
+energy_objective(initial_amplitudes)
 
-opt_energy, opt_amplitudes = opt_result.fun, opt_result.x
 
-print("\n Results for {}:".format(molecule.name))
-print("Optimal UCCSD Singlet Energy: {}".format(opt_energy))
-print("Optimal UCCSD Singlet Amplitudes: {}".format(opt_amplitudes))
-print("Classical CCSD Energy: {} Hartrees".format(molecule.ccsd_energy))
-print("Exact FCI Energy: {} Hartrees".format(molecule.fci_energy))
-print("Initial Energy of UCCSD with CCSD amplitudes: {} Hartrees".format(initial_energy))
+
+
+
+
+# # Run VQE Optimization to find new CCSD parameters
+# opt_result = minimize(energy_objective, initial_amplitudes,
+#                       method="CG", options={'disp':True})
 #
+# opt_energy, opt_amplitudes = opt_result.fun, opt_result.x
+#
+# print("\n Results for {}:".format(molecule.name))
+# print("Optimal UCCSD Singlet Energy: {}".format(opt_energy))
+# print("Optimal UCCSD Singlet Amplitudes: {}".format(opt_amplitudes))
+# print("Classical CCSD Energy: {} Hartrees".format(molecule.ccsd_energy))
+# print("Exact FCI Energy: {} Hartrees".format(molecule.fci_energy))
+# print("Initial Energy of UCCSD with CCSD amplitudes: {} Hartrees".format(initial_energy))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # compiler_engine = uccsd_trotter_engine(CommandPrinter())
-#
+
 # wavefunction = compiler_engine.allocate_qureg(molecule.n_qubits)
 # for i in range(molecule.n_electrons):
 #     X | wavefunction[i]
