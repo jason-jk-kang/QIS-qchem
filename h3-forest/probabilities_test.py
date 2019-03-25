@@ -32,17 +32,15 @@ def energy_objective(packed_amplitudes):
                                                  molecule.n_qubits,
                                                  molecule.n_electrons)
     evolution_operator | wavefunction
-
-    All(Measure) | wavefunction
-
+    # Measure(All) | wavefunction
     compiler_engine.flush()
 
-    # Evaluate the energy and reset wavefunction
-    for i in range (molecule.n_qubits):
-        print("Measured {}".format(int(wavefunction[i])))
+    results = compiler_engine.backend.get_probabilities(wavefunction)
 
-    # energy = compiler_engine.backend.get_probabilities(wavefunction)
-    # return energy
+    for state in results:
+        print("Measured {} with p = {}".format(state, results[state]))
+
+    return results
 
 
 # Load saved file for H3.
@@ -78,7 +76,9 @@ molecule = run_pyscf(molecule,
 qubit_hamiltonian = jordan_wigner(molecule.get_molecular_hamiltonian())
 qubit_hamiltonian.compress()
 compiler_engine = uccsd_trotter_engine(IBMBackend(user="jason_kang@college.harvard.edu",
-                                                  password="987412365"))
+                                                  password="987412365",
+                                                  use_hardware=False, num_runs=1024,
+                                                  verbose=False, device='ibmqx4'))
 
 n_amplitudes = uccsd_singlet_paramsize(molecule.n_qubits, molecule.n_electrons)
 initial_amplitudes = [0.01] * n_amplitudes
@@ -103,19 +103,6 @@ energy_objective(initial_amplitudes)
 # print("Classical CCSD Energy: {} Hartrees".format(molecule.ccsd_energy))
 # print("Exact FCI Energy: {} Hartrees".format(molecule.fci_energy))
 # print("Initial Energy of UCCSD with CCSD amplitudes: {} Hartrees".format(initial_energy))
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -34,7 +34,7 @@ def energy_objective(packed_amplitudes):
     evolution_operator | wavefunction
     compiler_engine.flush()
     # Evaluate the energy and reset wavefunction
-    energy = compiler_engine.backend.get_expectation_value(wavefunction)
+    energy = compiler_engine.backend.get_expectation_value(qubit_hamiltonian, wavefunction)
     All(Measure) | wavefunction
     compiler_engine.flush()
     return energy
@@ -70,9 +70,14 @@ molecule = run_pyscf(molecule,
                      run_fci=run_fci)
 
 # Use a Jordan-Wigner encoding, and compress to remove 0 imaginary components
-qubit_hamiltonian = jordan_wigner(molecule.get_molecular_hamiltonian())
+molecular_hamiltonian = molecule.get_molecular_hamiltonian(
+    occupied_indices=range(active_space_start),
+    active_indices=range(active_space_start, active_space_stop))
+
+fermion_hamiltonian = get_fermion_operator(molecular_hamiltonian)
+qubit_hamiltonian = jordan_wigner(fermion_hamiltonian)
 qubit_hamiltonian.compress()
-compiler_engine = uccsd_trotter_engine(IBMBackend())
+compiler_engine = uccsd_trotter_engine()
 
 n_amplitudes = uccsd_singlet_paramsize(molecule.n_qubits, molecule.n_electrons)
 initial_amplitudes = [0.01] * n_amplitudes
@@ -90,7 +95,9 @@ print("Optimal UCCSD Singlet Amplitudes: {}".format(opt_amplitudes))
 print("Classical CCSD Energy: {} Hartrees".format(molecule.ccsd_energy))
 print("Exact FCI Energy: {} Hartrees".format(molecule.fci_energy))
 print("Initial Energy of UCCSD with CCSD amplitudes: {} Hartrees".format(initial_energy))
-#
+
+
+
 # compiler_engine = uccsd_trotter_engine(CommandPrinter())
 #
 # wavefunction = compiler_engine.allocate_qureg(molecule.n_qubits)
