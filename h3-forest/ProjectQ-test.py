@@ -5,10 +5,12 @@ from scipy.optimize import minimize
 from openfermion.config import *
 from openfermionprojectq import *
 from openfermion.hamiltonians import MolecularData
-from openfermion.transforms import jordan_wigner
+from openfermion.transforms import jordan_wigner, get_fermion_operator, get_sparse_operator
 from openfermion.utils import uccsd_singlet_paramsize
 from projectq.ops import X, All, Measure
 from projectq.backends import CommandPrinter, CircuitDrawer, IBMBackend
+from pyscf import mp, fci
+
 
 from openfermionpyscf import run_pyscf
 
@@ -42,7 +44,7 @@ def energy_objective(packed_amplitudes):
 
 # Load saved file for H3.
 basis = 'sto-3g'
-spin = 1
+spin = 2
 
 # Set calculation parameters.
 run_scf = 1
@@ -98,16 +100,15 @@ print("Initial Energy of UCCSD with CCSD amplitudes: {} Hartrees".format(initial
 
 
 
-# compiler_engine = uccsd_trotter_engine(CommandPrinter())
-#
-# wavefunction = compiler_engine.allocate_qureg(molecule.n_qubits)
-# for i in range(molecule.n_electrons):
-#     X | wavefunction[i]
-#
-# # Build the circuit and act it on the wavefunction
-# evolution_operator = uccsd_singlet_evolution(opt_amplitudes,
-#                                              molecule.n_qubits,
-#                                              molecule.n_electrons)
-# evolution_operator | wavefunction
-# compiler_engine.flush()
-# print("Measured {}".format(int(wavefunction)))
+compiler_engine = uccsd_trotter_engine(CommandPrinter())
+
+wavefunction = compiler_engine.allocate_qureg(molecule.n_qubits)
+for i in range(molecule.n_electrons):
+    X | wavefunction[i]
+
+# Build the circuit and act it on the wavefunction
+evolution_operator = uccsd_singlet_evolution(opt_amplitudes,
+                                             molecule.n_qubits,
+                                             molecule.n_electrons)
+evolution_operator | wavefunction
+compiler_engine.flush()

@@ -4,8 +4,9 @@ from pyscf import mp, fci
 
 # Use PySCF, a classical computational chemistry software package, to compute the one-body and two-body integrals in
 # molecular-orbital basis, necessary to form the Fermionic operator
-driver = PySCFDriver(atom='H .0 .0 .0; H .0 .0 0.735',
+driver = PySCFDriver(atom='H .0 .0 .0; H .0 .0 0.735; H .0 .0 1.2',
                     unit=UnitsType.ANGSTROM,
+                    spin=1,
                     basis='sto3g')
 molecule = driver.run()
 num_particles = molecule.num_alpha + molecule.num_beta
