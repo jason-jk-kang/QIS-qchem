@@ -8,6 +8,7 @@ from openfermion.hamiltonians import MolecularData
 from openfermion.transforms import jordan_wigner
 from openfermion.utils import uccsd_singlet_paramsize
 from projectq.ops import X, All, Measure
+from projectq import MainEngine
 from projectq.backends import CommandPrinter, CircuitDrawer, IBMBackend
 
 from openfermionpyscf import run_pyscf
@@ -32,8 +33,10 @@ def energy_objective(packed_amplitudes):
                                                  molecule.n_qubits,
                                                  molecule.n_electrons)
     evolution_operator | wavefunction
-    # Measure(All) | wavefunction
     compiler_engine.flush()
+
+    # new_engine = MainEngine(IBMBackend())
+    # new_engine.backend.receive()
 
     results = compiler_engine.backend.get_probabilities(wavefunction)
 
@@ -75,15 +78,14 @@ molecule = run_pyscf(molecule,
 # Use a Jordan-Wigner encoding, and compress to remove 0 imaginary components
 qubit_hamiltonian = jordan_wigner(molecule.get_molecular_hamiltonian())
 qubit_hamiltonian.compress()
-compiler_engine = uccsd_trotter_engine(IBMBackend(user="jason_kang@college.harvard.edu",
+# compiler_engine = uccsd_trotter_engine(CommandPrinter())
+compiler_engine = uccsd_trotter_engine(compiler_backend=IBMBackend(user="jason_kang@college.harvard.edu",
                                                   password="987412365",
                                                   use_hardware=False, num_runs=1024,
-                                                  verbose=False, device='ibmqx4'))
+                                                  verbose=False))
 
 n_amplitudes = uccsd_singlet_paramsize(molecule.n_qubits, molecule.n_electrons)
 initial_amplitudes = [0.01] * n_amplitudes
-# initial_energy = energy_objective(initial_amplitudes)
-
 energy_objective(initial_amplitudes)
 
 
