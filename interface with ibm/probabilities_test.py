@@ -33,6 +33,9 @@ def energy_objective(packed_amplitudes):
                                                  molecule.n_qubits,
                                                  molecule.n_electrons)
     evolution_operator | wavefunction
+
+    All(Measure) | wavefunction
+
     compiler_engine.flush()
 
     # new_engine = MainEngine(IBMBackend())
@@ -105,8 +108,6 @@ energy_objective(initial_amplitudes)
 # print("Classical CCSD Energy: {} Hartrees".format(molecule.ccsd_energy))
 # print("Exact FCI Energy: {} Hartrees".format(molecule.fci_energy))
 # print("Initial Energy of UCCSD with CCSD amplitudes: {} Hartrees".format(initial_energy))
-
-
 
 # compiler_engine = uccsd_trotter_engine(CommandPrinter())
 
