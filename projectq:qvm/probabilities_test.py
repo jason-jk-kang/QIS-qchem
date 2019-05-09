@@ -1,3 +1,5 @@
+# Attempt to pass commands from ProjectQ algorithm to ibm_backend
+
 import os
 from numpy import array, concatenate, zeros
 from numpy.random import randn
@@ -108,6 +110,8 @@ energy_objective(initial_amplitudes)
 # print("Classical CCSD Energy: {} Hartrees".format(molecule.ccsd_energy))
 # print("Exact FCI Energy: {} Hartrees".format(molecule.fci_energy))
 # print("Initial Energy of UCCSD with CCSD amplitudes: {} Hartrees".format(initial_energy))
+
+
 
 # compiler_engine = uccsd_trotter_engine(CommandPrinter())
 

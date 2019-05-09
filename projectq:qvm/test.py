@@ -1,3 +1,5 @@
+# Testing projectQ interface with IBM with example code
+
 import projectq.setups.ibm
 from projectq.backends import IBMBackend
 from projectq.ops import Measure, Entangle, All

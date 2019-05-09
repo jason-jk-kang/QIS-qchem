@@ -1,4 +1,5 @@
-#This I use to test QVMConnection
+#This I use to test pyquil QVMConnection
+#Attempt to use pyquil's qvm library to compute energy levels
 
 
 from openfermion.hamiltonians import MolecularData
