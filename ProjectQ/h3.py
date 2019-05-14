@@ -121,8 +121,7 @@ for point in range(1, n_points + 1):
 
     # write results into txt file
     f = open('ProjectQ-h3-results.txt', 'a')
-    f.write("Results for {}: \n".format(molecule.name))
-    f.write("Bond Length: {} \n".format(str(bond_length)))
+    f.write("Results for {} at bond length {}:".format(name, str(bond_length)))
     f.write("Optimal UCCSD Singlet Energy: {} \n".format(str(opt_energy)))
     f.write("Optimal UCCSD Singlet Amplitudes: ")
     for item in opt_amplitudes:
@@ -135,8 +134,7 @@ for point in range(1, n_points + 1):
 
     f.close
 
-    print("\nResults for {}:".format(molecule.name))
-    print("Bond Length: {} \n".format(str(bond_length)))
+    print("\nResults for {} at bond length {}:".format(molecule.name, str(bond_length)))
     print("Optimal UCCSD Singlet Energy: {}".format(opt_energy))
     print("Optimal UCCSD Singlet Amplitudes: {}".format(opt_amplitudes))
     print("Classical CCSD Energy: {} Hartrees".format(molecule.ccsd_energy))
@@ -170,12 +168,12 @@ print ("This is the length_delta:", length_delta)
 force = [a/b for a, b in zip(energy_delta, length_delta)]
 print ("This is the force:", force)
 
-lengths = [1/2(b - a) for a, b in zip(bond_lengths, bond_lengths[1:])]
+lengths = [a + 1/2*(b - a) for a, b in zip(bond_lengths, bond_lengths[1:])]
 print ("This is the lengths:",lengths)
 
 f2 = plt.figure(0)
 plt.plot(lengths, force, 'x-')
-plt.ylabel('Energy in Hartree / angstrom')
+plt.ylabel('Force in Hartree / angstrom')
 plt.xlabel('Bond length in angstrom')
 
 plt.savefig("ProjectQ-h3-force-graph", dpi=400, orientation='portrait')

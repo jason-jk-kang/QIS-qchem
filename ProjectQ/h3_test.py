@@ -11,7 +11,6 @@ from projectq.ops import X, All, Measure
 from projectq.backends import CommandPrinter, CircuitDrawer, IBMBackend
 from pyscf import mp, fci
 
-import matplotlib.pyplot as plt
 
 from openfermionpyscf import run_pyscf
 
@@ -56,47 +55,11 @@ run_fci = 1
 delete_input = True
 delete_output = True
 
+
 # Set Hamiltonian parameters.
 active_space_start = 1
 active_space_stop = 3
-
-# Set record list for plotting. Existing information input from ProjectQ simulator.
-force_list = []
-bond_lengths = [0.725]
-fci_energies = [-1.603565128035238, -1.6004199263636436]
-UCCSD_energies = [-1.5836999664044602, -1.5771459927119653]
-
-#initial force as calculated by fci, hartree / angstroms
-initial_velocity = 1.10305*10**(-30)
-mass = 1.6735575*10**(-27)
-time = 1
-distance_counter = 0.8
-counter = 1
-
-
-#update lists
-force_list += [(fci_energies[-1] - fci_energies[-2])/
-               (distance_counter - bond_lengths[-1])]
-bond_lengths += [distance_counter]
-
-# compute distance_counter
-force = force_list[-1]
-acceleration = (force/mass * 4.359744650*(10**(-28)) * ((10**10)**2) *
-    (2.41888*10**(-17))**2)
-
-distance_counter += acceleration*1/2*time**2 + initial_velocity*time
-
-print("This is function_run no.{} for distance {}".format(counter, distance_counter))
-
-
-
-
-
-
-
-
-geometry = [('H', (0., 0., 0.)), ('H', (0., 0., distance_counter)),
-            ('H', (0., 0., 3.3))]
+geometry = [('H', (0., 0., 0.)), ('H', (0., 0., 0.7414)), ('H', (0., 0., 3.3))]
 
 # Generate and populate instance of MolecularData.
 molecule = MolecularData(geometry, basis, spin, description="h3")
@@ -128,40 +91,24 @@ opt_result = minimize(energy_objective, initial_amplitudes,
 
 opt_energy, opt_amplitudes = opt_result.fun, opt_result.x
 
-fci_energies += [float(molecule.fci_energy)]
-# UCCSD_energies += [float(opt_energy)]
-
 print("\n Results for {}:".format(molecule.name))
 print("Optimal UCCSD Singlet Energy: {}".format(opt_energy))
+print("Optimal UCCSD Singlet Amplitudes: {}".format(opt_amplitudes))
+print("Classical CCSD Energy: {} Hartrees".format(molecule.ccsd_energy))
 print("Exact FCI Energy: {} Hartrees".format(molecule.fci_energy))
+print("Initial Energy of UCCSD with CCSD amplitudes: {} Hartrees".format(initial_energy))
 
 
 
+compiler_engine = uccsd_trotter_engine(CommandPrinter())
 
+wavefunction = compiler_engine.allocate_qureg(molecule.n_qubits)
+for i in range(molecule.n_electrons):
+    X | wavefunction[i]
 
-
-
-
-
-
-
-
-
-
-
-
-print("This is bond lengths:", bond_lengths)
-print("This is forces list:", force_list)
-
-adjusted_lengths = [a+1/2*(b - a) for a, b in zip(bond_lengths, bond_lengths[1:])]
-
-print("This is adjusted lengths:", adjusted_lengths)
-
-f1 = plt.figure(0)
-plt.plot(adjusted_lengths, force_list, 'x-')
-plt.ylabel('Force in Hartree/angstrom')
-plt.xlabel('Bond length in angstrom')
-
-plt.savefig("Force-Propogation-h3-graph", dpi=400, orientation='portrait')
-
-plt.show()
+# Build the circuit and act it on the wavefunction
+evolution_operator = uccsd_singlet_evolution(opt_amplitudes,
+                                             molecule.n_qubits,
+                                             molecule.n_electrons)
+evolution_operator | wavefunction
+compiler_engine.flush()

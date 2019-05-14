@@ -11,6 +11,7 @@ from projectq.ops import X, All, Measure
 from projectq.backends import CommandPrinter, CircuitDrawer, IBMBackend
 from pyscf import mp, fci
 
+import matplotlib.pyplot as plt
 
 from openfermionpyscf import run_pyscf
 
@@ -60,32 +61,34 @@ active_space_start = 1
 active_space_stop = 3
 
 # Set record list for plotting. Existing information input from ProjectQ simulator.
-bond_lengths = [0.73]
+force_list = []
+bond_lengths = [0.725]
 fci_energies = [-1.603565128035238, -1.6004199263636436]
 UCCSD_energies = [-1.5836999664044602, -1.5771459927119653]
 
-#initial force as calculated by fci
-force_list = [0.041936022287925389248029717233852330706289645136440941719]
-
-distance_counter = 0.8
-
+# Initial force as calculated by fci in hartree / angstroms
 initial_velocity = 1.10305*10**(-30)
-
 mass = 1.6735575*10**(-27)
-
 time = 1
+distance_counter = 0.8
+counter = 1
 
-while distance_counter < 3.0
+while distance_counter < 3.0:
+
+    # Update lists
+    force_list += [(fci_energies[-1] - fci_energies[-2])/
+                   (distance_counter - bond_lengths[-1])]
     bond_lengths += [distance_counter]
 
+    # Compute distance after force propogation
     force = force_list[-1]
-
     acceleration = (force/mass * 4.359744650*(10**(-28)) * ((10**10)**2) *
-        (2.41888*10**(-17))**2)
+                   (2.41888*10**(-17))**2)
 
     distance_counter += acceleration*1/2*time**2 + initial_velocity*time
+    print("This is function_run #{} for distance {}".format(counter, distance_counter))
 
-
+    # Begin Running Simulation
     geometry = [('H', (0., 0., 0.)), ('H', (0., 0., distance_counter)),
                 ('H', (0., 0., 3.3))]
 
@@ -120,25 +123,23 @@ while distance_counter < 3.0
     opt_energy, opt_amplitudes = opt_result.fun, opt_result.x
 
     fci_energies += [float(molecule.fci_energy)]
-    # UCCSD_energies += [float(opt_energy)]
+    UCCSD_energies += [float(opt_energy)]
 
-    force_list += [(fci_energies[-1] - fci_energies[-2])/(distance_counter - bond_lengths[-1])]
-
+    # Print Results
     print("\n Results for {}:".format(molecule.name))
     print("Optimal UCCSD Singlet Energy: {}".format(opt_energy))
-    print("Optimal UCCSD Singlet Amplitudes: {}".format(opt_amplitudes))
-    print("Classical CCSD Energy: {} Hartrees".format(molecule.ccsd_energy))
     print("Exact FCI Energy: {} Hartrees".format(molecule.fci_energy))
-    print("Initial Energy of UCCSD with CCSD amplitudes: {} Hartrees".format(initial_energy))
+
+    # Iterate counter
+    counter += 1
 
 
-print("This is bond lengths:", bond_lengths)
+print("These are bond lengths:", bond_lengths)
+print("These are the forces:", force_list)
 
-print("This is force lists:", force_list)
+adjusted_lengths = [a+1/2*(b - a) for a, b in zip(bond_lengths, bond_lengths[1:])]
 
-adjusted_lengths = [1/2(b - a) for a, b in zip(bond_lengths, bond_lengths[1:])]
-
-print("This is adjusted lengths:", adjusted_lengths)
+print("These are the adjusted lengths:", adjusted_lengths)
 
 f1 = plt.figure(0)
 plt.plot(adjusted_lengths, force_list, 'x-')
