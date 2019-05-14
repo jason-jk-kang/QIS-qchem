@@ -69,7 +69,7 @@ UCCSD_energies = [-1.5836999664044602, -1.5771459927119653]
 # Initial force as calculated by fci in hartree / angstroms
 initial_velocity = 1.10305*10**(-30)
 mass = 1.6735575*10**(-27)
-time = 1
+time = 100
 distance_counter = 0.8
 counter = 1
 
@@ -82,11 +82,14 @@ while distance_counter < 3.0:
 
     # Compute distance after force propogation
     force = force_list[-1]
-    acceleration = (force/mass * 4.359744650*(10**(-28)) * ((10**10)**2) *
+    acceleration = (force/mass * 4.359744650*(10**(-18)) * ((10**10)**2) *
                    (2.41888*10**(-17))**2)
+    print(acceleration*1/2*(time**2))
+    print(initial_velocity*time)
 
-    distance_counter += acceleration*1/2*time**2 + initial_velocity*time
-    print("This is function_run #{} for distance {}".format(counter, distance_counter))
+    distance_counter += acceleration*1/2*(time**2) + initial_velocity*time
+    print("\nThis is function_run #{} for distance: {} and force: {}"
+        .format(counter, distance_counter, force))
 
     # Begin Running Simulation
     geometry = [('H', (0., 0., 0.)), ('H', (0., 0., distance_counter)),
