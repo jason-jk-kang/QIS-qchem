@@ -73,23 +73,28 @@ UCCSD_energies = [-1.5836999664044602, -1.5771459927119653]
 # Initial force as calculated by fci in hartree / angstroms
 initial_velocity = 1.10305*10**(-30)
 mass = 1.6735575*10**(-27)
-time = 200
+time = 100
 distance_counter = 0.8
 counter = 1
 
-while distance_counter < 3.0:
+while (distance_counter < 3.0) and (counter < 100):
 
     # Update lists
-    force_list += [(fci_energies[-1] - fci_energies[-2])/
-                   (distance_counter - bond_lengths[-1])]
+    force_delta = fci_energies[-1] - fci_energies[-2]
+    distance_delta = distance_counter - bond_lengths[-1]
+
+    if distance_delta == 0:
+        print(force_list)
+        force_list += [force_list[-1]]
+    else:
+        force_list += [force_delta/distance_delta]
+
     bond_lengths += [distance_counter]
 
     # Compute distance after force propogation
     force = force_list[-1]
     acceleration = (force/mass * 4.359744650*(10**(-18)) * ((10**10)**2) *
                    (2.41888*10**(-17))**2)
-    print(acceleration*1/2*(time**2))
-    print(initial_velocity*time)
 
     distance_counter += acceleration*1/2*(time**2) + initial_velocity*time
     print("\nThis is function_run #{} for distance: {} and force: {}"
@@ -121,20 +126,21 @@ while distance_counter < 3.0:
 
     n_amplitudes = uccsd_singlet_paramsize(molecule.n_qubits, molecule.n_electrons)
     initial_amplitudes = [0.01] * n_amplitudes
+    print(initial_amplitudes)
     initial_energy = energy_objective(initial_amplitudes)
 
     # Run VQE Optimization to find new CCSD parameters
-    opt_result = minimize(energy_objective, initial_amplitudes,
-                          method="CG", options={'disp':True})
-
-    opt_energy, opt_amplitudes = opt_result.fun, opt_result.x
+    # opt_result = minimize(energy_objective, initial_amplitudes,
+    #                       method="CG", options={'disp':True})
+    #
+    # opt_energy, opt_amplitudes = opt_result.fun, opt_result.x
 
     fci_energies += [float(molecule.fci_energy)]
-    UCCSD_energies += [float(opt_energy)]
+    # UCCSD_energies += [float(opt_energy)]
 
     # Print Results
     print("\n Results for {}:".format(molecule.name))
-    print("Optimal UCCSD Singlet Energy: {}".format(opt_energy))
+    # print("Optimal UCCSD Singlet Energy: {}".format(opt_energy))
     print("Exact FCI Energy: {} Hartrees".format(molecule.fci_energy))
 
     # Iterate counter
