@@ -36,6 +36,10 @@ def energy_objective(packed_amplitudes):
                                                  molecule.n_electrons)
     evolution_operator | wavefunction
     compiler_engine.flush()
+
+    print(type(qubit_hamiltonian))
+    print(type(wavefunction))
+
     # Evaluate the energy and reset wavefunction
     energy = compiler_engine.backend.get_expectation_value(qubit_hamiltonian, wavefunction)
     All(Measure) | wavefunction
@@ -69,7 +73,7 @@ UCCSD_energies = [-1.5836999664044602, -1.5771459927119653]
 # Initial force as calculated by fci in hartree / angstroms
 initial_velocity = 1.10305*10**(-30)
 mass = 1.6735575*10**(-27)
-time = 100
+time = 200
 distance_counter = 0.8
 counter = 1
 

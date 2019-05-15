@@ -121,7 +121,7 @@ for point in range(1, n_points + 1):
 
     # write results into txt file
     f = open('ProjectQ-h3-results.txt', 'a')
-    f.write("Results for {} at bond length {}:".format(name, str(bond_length)))
+    f.write("Results for {} at bond length {}:".format(molecule.name, str(bond_length)))
     f.write("Optimal UCCSD Singlet Energy: {} \n".format(str(opt_energy)))
     f.write("Optimal UCCSD Singlet Amplitudes: ")
     for item in opt_amplitudes:
