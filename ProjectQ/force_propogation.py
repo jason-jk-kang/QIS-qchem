@@ -72,7 +72,7 @@ fci_energies = [-1.603565128035238, -1.6004199263636436]
 UCCSD_energies = [-1.5836999664044602, -1.5771459927119653]
 
 # Initial force as calculated by fci in hartree / angstroms
-velocity = 0.394
+velocity = 0.00124594
 mass = 1836
 time = .1
 distance_counter = 1.51178
@@ -83,12 +83,7 @@ while (distance_counter < 5.7):
     # Update lists
     force_delta = fci_energies[-1] - fci_energies[-2]
     distance_delta = distance_counter - bond_lengths[-1]
-
-    if distance_delta == 0:
-        print(force_list)
-        force_list += [force_list[-1]]
-    else:
-        force_list += [force_delta/distance_delta]
+    force_list += [force_delta/distance_delta]
 
     bond_lengths += [distance_counter]
 
@@ -103,7 +98,7 @@ while (distance_counter < 5.7):
     # distance_counter += acceleration*1/2*(time**2) + initial_velocity*time
 
     print("""\nThis is function_run #{} for distance: {} and force: {} and
-              acceleration: {}"""
+              velocity: {}"""
               .format(counter, distance_counter, force_list[-1], velocity))
 
     # Begin Running Simulation
@@ -153,6 +148,7 @@ while (distance_counter < 5.7):
     counter += 1
 
 force_list = force_list[1:]
+fci_energies = fci_energies[:-1]
 print("These are bond lengths:", bond_lengths)
 print("These are the forces:", force_list)
 
@@ -166,5 +162,15 @@ plt.ylabel('Force in Hartree/angstrom')
 plt.xlabel('Bond length in angstrom')
 
 plt.savefig("Force-Propogation-h3-graph", dpi=400, orientation='portrait')
+
+plt.show()
+
+
+f2 = plt.figure(1)
+plt.plot(bond_lengths, fci_energies, 'x-')
+plt.ylabel('Energy in Hartree')
+plt.xlabel('Bond length in bohr')
+
+plt.savefig("Force-Propogation-energy-h3-graph", dpi=400, orientation='portrait')
 
 plt.show()
