@@ -62,40 +62,38 @@ active_space_start = 1
 active_space_stop = 3
 
 # Set record list for plotting. Existing information input from ProjectQ simulator.
-force_list = [0]
-acceleration_list=[0]
+fci_force_list = [0]
+UCCSD_force_list = [0]
 bond_lengths = [1.37005]
 fci_energies = [-1.603565128035238, -1.6004199263636436]
 UCCSD_energies = [-1.5836999664044602, -1.5771459927119653]
+opt_amplitudes = [-5.7778375420113214e-08, -1.6441896890657683e-06, 9.223967507357728e-08, 0.03732738061624315, 1.5707960798368998]
 
-# Initial force as calculated by fci in hartree / angstroms
-velocity = 0.394
+# Initial Information Computed by FCI on nuclei position 1.51178 bohrs
+velocity = 0.0394
 mass = 1836
-time = .1
+time = .5
 distance_counter = 1.51178
 counter = 1
 
-while (distance_counter < 5.7):
+while (distance_counter < 6) and (counter < 200):
 
     # Update lists
-    force_delta = fci_energies[-1] - fci_energies[-2]
     distance_delta = distance_counter - bond_lengths[-1]
-    force_list += [force_delta/distance_delta]
+    fci_force_list += [-(fci_energies[-1] - fci_energies[-2])/distance_delta]
+    # UCCSD_force_list += [-(UCCSD_energies[-1] - UCCSD_energies[-2])/distance_delta]
 
     bond_lengths += [distance_counter]
 
     # Compute distance after force propogation
-    distance_counter += time*velocity + 0.5 * (time**2) * force_list[-1]/mass
-    velocity += time/mass * 0.5 * (force_list[-1] + force_list[-2])
+    distance_counter += time*velocity + 0.5 * fci_force_list[-1]/mass * (time**2)
+    velocity += fci_force_list[-1]/mass * time
 
-    # acceleration_list += [acceleration_list[-1] + force/mass * 0.529117]
-    # acceleration = acceleration_list[-1]
-    #
-    # distance_counter += acceleration*1/2*(time**2) + initial_velocity*time
-
-    print("""\nThis is function_run #{} for distance: {} bohrs and force: {} and
-              velocity: {}"""
-              .format(counter, distance_counter, force_list[-1], velocity))
+    # Print Simulation Information
+    print("\nThis is function_run #{}".format(counter))
+    print("distance: {} bohrs".format(distance_counter))
+    print("force:{}".format(fci_force_list[-1]))
+    print("velocity:{}".format(velocity))
 
     # Begin Running Simulation, Convert distance_counter to angstroms
     geometry = [('H', (0., 0., 0.)), ('H', (0., 0., distance_counter * 0.529177249)),
@@ -112,22 +110,18 @@ while (distance_counter < 5.7):
                          run_fci=run_fci)
 
     # Use a Jordan-Wigner encoding, and compress to remove 0 imaginary components
-    molecular_hamiltonian = molecule.get_molecular_hamiltonian(
-        occupied_indices=range(active_space_start),
-        active_indices=range(active_space_start, active_space_stop))
+    # molecular_hamiltonian = molecule.get_molecular_hamiltonian(
+    #     occupied_indices=range(active_space_start),
+    #     active_indices=range(active_space_start, active_space_stop))
 
-    fermion_hamiltonian = get_fermion_operator(molecular_hamiltonian)
-    qubit_hamiltonian = jordan_wigner(fermion_hamiltonian)
-    qubit_hamiltonian.compress()
-    compiler_engine = uccsd_trotter_engine()
-
-    # n_amplitudes = uccsd_singlet_paramsize(molecule.n_qubits, molecule.n_electrons)
-    # initial_amplitudes = [0.01] * n_amplitudes
-    # print(initial_amplitudes)
-    # initial_energy = energy_objective(initial_amplitudes)
+    # fermion_hamiltonian = get_fermion_operator(molecular_hamiltonian)
+    # qubit_hamiltonian = jordan_wigner(fermion_hamiltonian)
+    # qubit_hamiltonian.compress()
+    # compiler_engine = uccsd_trotter_engine()
+    # initial_energy = energy_objective(opt_amplitudes)
 
     # Run VQE Optimization to find new CCSD parameters
-    # opt_result = minimize(energy_objective, initial_amplitudes,
+    # opt_result = minimize(energy_objective, opt_amplitudes,
     #                       method="CG", options={'disp':True})
     #
     # opt_energy, opt_amplitudes = opt_result.fun, opt_result.x
@@ -136,41 +130,54 @@ while (distance_counter < 5.7):
     # UCCSD_energies += [float(opt_energy)]
 
     # Print Results
-    print("\n Results for {}:".format(molecule.name))
+    print("\nResults for {}:".format(molecule.name))
     # print("Optimal UCCSD Singlet Energy: {}".format(opt_energy))
     print("Exact FCI Energy: {} Hartrees".format(molecule.fci_energy))
 
     # Iterate counter
     counter += 1
 
-force_list = force_list[1:]
+# Adjust lists
+fci_force_list = fci_force_list[1:]
+# UCCSD_force_list = UCCSD_force_list[1:]
 fci_energies = fci_energies[:-1]
-print("These are bond lengths:", bond_lengths)
-print("These are the forces:", force_list)
-
+# UCCSD_energies = UCCSD_energies[:-1]
 adjusted_lengths = [a+1/2*(b - a) for a, b in zip(bond_lengths, bond_lengths[1:])]
 
-print("These are the adjusted lengths:", adjusted_lengths)
-
-
-
-
-
-f1 = plt.figure(0)
-plt.plot(adjusted_lengths, force_list, 'x-')
-plt.ylabel('Force in Hartree/bohrs')
+# Plot Force Over Length
+f0 = plt.figure(0)
+plt.plot(adjusted_lengths, fci_force_list, 'x-')
+# plt.plot(adjusted_lengths, UCCSD_force_list, 'o-')
+plt.ylabel('Force in Hartree / Bohrs')
 plt.xlabel('Bond length in bohrs')
 
-plt.savefig("Force-Propogation-h3-graph", dpi=400, orientation='portrait')
+plt.savefig("FP-Force", dpi=400, orientation='portrait')
+
+plt.show()
+
+# Plot Energy Over Length
+f2 = plt.figure(1)
+plt.plot(bond_lengths, fci_energies, 'x-')
+# plt.plot(bond_lengths, UCCSD_energies, 'o-')
+plt.ylabel('Energy in Hartree')
+plt.xlabel('Bond length in bohr')
+
+plt.savefig("FP-Energy", dpi=400, orientation='portrait')
 
 plt.show()
 
 
-f2 = plt.figure(1)
-plt.plot(bond_lengths, fci_energies, 'x-')
-plt.ylabel('Energy in Hartree')
-plt.xlabel('Bond length in bohr')
 
-plt.savefig("Force-Propogation-energy-h3-graph", dpi=400, orientation='portrait')
+# Plot Distance Over Time
+clock = [time]
+for x in range(len(bond_lengths) - 1):
+    clock += [clock[-1] + time]
+
+f2 = plt.figure(1)
+plt.plot(clock, bond_lengths, 'x-')
+plt.ylabel('Distance in bohrs')
+plt.xlabel('Time in au')
+
+plt.savefig("FP-distance", dpi=400, orientation='portrait')
 
 plt.show()

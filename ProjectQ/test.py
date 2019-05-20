@@ -1,7 +1,8 @@
+fci_force_list = [1,2,3,4]
+time = 0.1
 
-force = 0.04193602228792648
-mass = 1.6735575*10**(-27)
-acceleration = (force/mass * 4.359744650*(10**(-18)) * ((10**10)**2) *
-               (2.41888*10**(-17))**2)
+clock = [time]
+for x in range(len(fci_force_list) - 1):
+    clock += [clock[-1] + time]
 
-print(acceleration)
+print(clock)

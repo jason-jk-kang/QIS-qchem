@@ -72,7 +72,7 @@ run_ccsd = 0
 run_fci = 1
 delete_input = True
 delete_output = True
-
+amplitudes = [0.01] * 5
 
 f = open('ProjectQ-h3-results.txt', 'w')
 
@@ -106,20 +106,21 @@ for point in range(1, n_points + 1):
 
     compiler_engine = uccsd_trotter_engine()
 
-    n_amplitudes = uccsd_singlet_paramsize(molecule.n_qubits, molecule.n_electrons)
-    initial_amplitudes = [0.01] * n_amplitudes
-    initial_energy = energy_objective(initial_amplitudes)
+    # n_amplitudes = uccsd_singlet_paramsize(molecule.n_qubits, molecule.n_electrons)
+    # initial_amplitudes = [0.01] * n_amplitudes
+    initial_energy = energy_objective(amplitudes)
 
     # Run VQE Optimization to find new CCSD parameters
-    opt_result = minimize(energy_objective, initial_amplitudes,
+    opt_result = minimize(energy_objective, amplitudes,
                           method="CG", options={'disp':True})
 
     opt_energy, opt_amplitudes = opt_result.fun, opt_result.x
 
+    amplitudes = opt_amplitudes
     fci_energies += [float(molecule.fci_energy)]
     UCCSD_energies += [float(opt_energy)]
 
-    # write results into txt file
+    # Write Results
     f = open('ProjectQ-h3-results.txt', 'a')
     f.write("Results for {} at bond length {}:".format(molecule.name, str(bond_length)))
     f.write("Optimal UCCSD Singlet Energy: {} \n".format(str(opt_energy)))
@@ -134,6 +135,7 @@ for point in range(1, n_points + 1):
 
     f.close
 
+    # Print Results
     print("\nResults for {} at bond length {}:".format(molecule.name, str(bond_length)))
     print("Optimal UCCSD Singlet Energy: {}".format(opt_energy))
     print("Optimal UCCSD Singlet Amplitudes: {}".format(opt_amplitudes))
