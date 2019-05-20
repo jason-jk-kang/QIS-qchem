@@ -37,9 +37,6 @@ def energy_objective(packed_amplitudes):
     evolution_operator | wavefunction
     compiler_engine.flush()
 
-    print(type(qubit_hamiltonian))
-    print(type(wavefunction))
-
     # Evaluate the energy and reset wavefunction
     energy = compiler_engine.backend.get_expectation_value(qubit_hamiltonian, wavefunction)
     All(Measure) | wavefunction
@@ -72,7 +69,7 @@ fci_energies = [-1.603565128035238, -1.6004199263636436]
 UCCSD_energies = [-1.5836999664044602, -1.5771459927119653]
 
 # Initial force as calculated by fci in hartree / angstroms
-velocity = 0.00124594
+velocity = 0.394
 mass = 1836
 time = .1
 distance_counter = 1.51178
@@ -88,21 +85,20 @@ while (distance_counter < 5.7):
     bond_lengths += [distance_counter]
 
     # Compute distance after force propogation
+    distance_counter += time*velocity + 0.5 * (time**2) * force_list[-1]/mass
     velocity += time/mass * 0.5 * (force_list[-1] + force_list[-2])
-    distance_counter += time*velocity + 0.5 * (time**2) * force_list[-1]
-
 
     # acceleration_list += [acceleration_list[-1] + force/mass * 0.529117]
     # acceleration = acceleration_list[-1]
     #
     # distance_counter += acceleration*1/2*(time**2) + initial_velocity*time
 
-    print("""\nThis is function_run #{} for distance: {} and force: {} and
+    print("""\nThis is function_run #{} for distance: {} bohrs and force: {} and
               velocity: {}"""
               .format(counter, distance_counter, force_list[-1], velocity))
 
-    # Begin Running Simulation
-    geometry = [('H', (0., 0., 0.)), ('H', (0., 0., distance_counter)),
+    # Begin Running Simulation, Convert distance_counter to angstroms
+    geometry = [('H', (0., 0., 0.)), ('H', (0., 0., distance_counter * 0.529177249)),
                 ('H', (0., 0., 3.3))]
 
     # Generate and populate instance of MolecularData.
@@ -156,10 +152,14 @@ adjusted_lengths = [a+1/2*(b - a) for a, b in zip(bond_lengths, bond_lengths[1:]
 
 print("These are the adjusted lengths:", adjusted_lengths)
 
+
+
+
+
 f1 = plt.figure(0)
 plt.plot(adjusted_lengths, force_list, 'x-')
-plt.ylabel('Force in Hartree/angstrom')
-plt.xlabel('Bond length in angstrom')
+plt.ylabel('Force in Hartree/bohrs')
+plt.xlabel('Bond length in bohrs')
 
 plt.savefig("Force-Propogation-h3-graph", dpi=400, orientation='portrait')
 
