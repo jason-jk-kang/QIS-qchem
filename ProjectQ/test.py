@@ -1,8 +1,11 @@
-fci_force_list = [1,2,3,4]
-time = 0.1
+import matplotlib.pyplot as plt
 
-clock = [time]
-for x in range(len(fci_force_list) - 1):
-    clock += [clock[-1] + time]
+one = [1,2,3,4]
+two = [10,14,16,17]
 
-print(clock)
+f3 = plt.figure(4)
+plt.plot(one, two, '-', color='orange')
+plt.ylabel('Velocity')
+plt.xlabel('Time in au')
+
+plt.show()

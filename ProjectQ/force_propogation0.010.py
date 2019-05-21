@@ -64,39 +64,36 @@ active_space_stop = 3
 # Set record list for plotting. Existing information input from ProjectQ simulator.
 fci_force_list = [0]
 UCCSD_force_list = [0]
-bond_lengths = [1.37005]
+bond_lengths = [1.37005, 1.51178]
 fci_energies = [-1.603565128035238, -1.6004199263636436]
 UCCSD_energies = [-1.5836999664044602, -1.5771459927119653]
 opt_amplitudes = [-5.7778375420113214e-08, -1.6441896890657683e-06, 9.223967507357728e-08, 0.03732738061624315, 1.5707960798368998]
 
-# Initial Information Computed by FCI on nuclei position 1.51178 bohrs
-velocity = 0.0394
+# Initial Information Computed by FCI on nuclei position 1.51178 bohrs. velocity at 300K approx .394
+velocity = [0.01]
 mass = 1836
 time = .5
-distance_counter = 1.51178
 counter = 1
 
-while (distance_counter < 6) and (counter < 200):
+while (counter < 1500):
 
     # Update lists
-    distance_delta = distance_counter - bond_lengths[-1]
+    distance_delta = bond_lengths[-1] - bond_lengths[-2]
     fci_force_list += [-(fci_energies[-1] - fci_energies[-2])/distance_delta]
-    # UCCSD_force_list += [-(UCCSD_energies[-1] - UCCSD_energies[-2])/distance_delta]
-
-    bond_lengths += [distance_counter]
+    UCCSD_force_list += [-(UCCSD_energies[-1] - UCCSD_energies[-2])/distance_delta]
 
     # Compute distance after force propogation
-    distance_counter += time*velocity + 0.5 * fci_force_list[-1]/mass * (time**2)
-    velocity += fci_force_list[-1]/mass * time
+    bond_lengths += [bond_lengths[-1] + time*velocity[-1] + 0.5 * fci_force_list[-1]/mass * (time**2)]
+    velocity += [velocity[-1] + fci_force_list[-1]/mass * time]
 
     # Print Simulation Information
     print("\nThis is function_run #{}".format(counter))
-    print("distance: {} bohrs".format(distance_counter))
+    print("distance: {} bohrs".format(bond_lengths[-1]))
     print("force:{}".format(fci_force_list[-1]))
-    print("velocity:{}".format(velocity))
+    print("velocity:{}".format(velocity[-2]))
 
     # Begin Running Simulation, Convert distance_counter to angstroms
-    geometry = [('H', (0., 0., 0.)), ('H', (0., 0., distance_counter * 0.529177249)),
+    geometry = [('H', (0., 0., 0.)), ('H', (0., 0., bond_lengths[-1] * 0.529177249)),
                 ('H', (0., 0., 3.3))]
 
     # Generate and populate instance of MolecularData.
@@ -110,28 +107,28 @@ while (distance_counter < 6) and (counter < 200):
                          run_fci=run_fci)
 
     # Use a Jordan-Wigner encoding, and compress to remove 0 imaginary components
-    # molecular_hamiltonian = molecule.get_molecular_hamiltonian(
-    #     occupied_indices=range(active_space_start),
-    #     active_indices=range(active_space_start, active_space_stop))
+    molecular_hamiltonian = molecule.get_molecular_hamiltonian(
+        occupied_indices=range(active_space_start),
+        active_indices=range(active_space_start, active_space_stop))
 
-    # fermion_hamiltonian = get_fermion_operator(molecular_hamiltonian)
-    # qubit_hamiltonian = jordan_wigner(fermion_hamiltonian)
-    # qubit_hamiltonian.compress()
-    # compiler_engine = uccsd_trotter_engine()
-    # initial_energy = energy_objective(opt_amplitudes)
+    fermion_hamiltonian = get_fermion_operator(molecular_hamiltonian)
+    qubit_hamiltonian = jordan_wigner(fermion_hamiltonian)
+    qubit_hamiltonian.compress()
+    compiler_engine = uccsd_trotter_engine()
+    initial_energy = energy_objective(opt_amplitudes)
 
     # Run VQE Optimization to find new CCSD parameters
-    # opt_result = minimize(energy_objective, opt_amplitudes,
-    #                       method="CG", options={'disp':True})
-    #
-    # opt_energy, opt_amplitudes = opt_result.fun, opt_result.x
+    opt_result = minimize(energy_objective, opt_amplitudes,
+                          method="CG", options={'disp':True})
+
+    opt_energy, opt_amplitudes = opt_result.fun, opt_result.x
 
     fci_energies += [float(molecule.fci_energy)]
-    # UCCSD_energies += [float(opt_energy)]
+    UCCSD_energies += [float(opt_energy)]
 
     # Print Results
     print("\nResults for {}:".format(molecule.name))
-    # print("Optimal UCCSD Singlet Energy: {}".format(opt_energy))
+    print("Optimal UCCSD Singlet Energy: {}".format(opt_energy))
     print("Exact FCI Energy: {} Hartrees".format(molecule.fci_energy))
 
     # Iterate counter
@@ -139,30 +136,34 @@ while (distance_counter < 6) and (counter < 200):
 
 # Adjust lists
 fci_force_list = fci_force_list[1:]
-# UCCSD_force_list = UCCSD_force_list[1:]
+UCCSD_force_list = UCCSD_force_list[1:]
 fci_energies = fci_energies[:-1]
-# UCCSD_energies = UCCSD_energies[:-1]
+UCCSD_energies = UCCSD_energies[:-1]
+bond_lengths = bond_lengths[:-1]
 adjusted_lengths = [a+1/2*(b - a) for a, b in zip(bond_lengths, bond_lengths[1:])]
+
 
 # Plot Force Over Length
 f0 = plt.figure(0)
-plt.plot(adjusted_lengths, fci_force_list, 'x-')
-# plt.plot(adjusted_lengths, UCCSD_force_list, 'o-')
+plt.plot(adjusted_lengths, fci_force_list, '-')
+plt.plot(adjusted_lengths, UCCSD_force_list, color='orange')
 plt.ylabel('Force in Hartree / Bohrs')
 plt.xlabel('Bond length in bohrs')
 
-plt.savefig("FP-Force", dpi=400, orientation='portrait')
+plt.savefig("FP-0.010-Force", dpi=400, orientation='portrait')
 
 plt.show()
 
+
+
 # Plot Energy Over Length
 f2 = plt.figure(1)
-plt.plot(bond_lengths, fci_energies, 'x-')
-# plt.plot(bond_lengths, UCCSD_energies, 'o-')
+plt.plot(bond_lengths, fci_energies, '-')
+plt.plot(bond_lengths, UCCSD_energies, '-', color='orange')
 plt.ylabel('Energy in Hartree')
 plt.xlabel('Bond length in bohr')
 
-plt.savefig("FP-Energy", dpi=400, orientation='portrait')
+plt.savefig("FP-0.010-Energy", dpi=400, orientation='portrait')
 
 plt.show()
 
@@ -174,10 +175,27 @@ for x in range(len(bond_lengths) - 1):
     clock += [clock[-1] + time]
 
 f2 = plt.figure(1)
-plt.plot(clock, bond_lengths, 'x-')
+plt.plot(clock, bond_lengths, '-')
 plt.ylabel('Distance in bohrs')
 plt.xlabel('Time in au')
 
-plt.savefig("FP-distance", dpi=400, orientation='portrait')
+plt.savefig("FP-0.010-Distance", dpi=400, orientation='portrait')
+
+plt.show()
+
+
+
+
+
+clock = [time]
+for x in range(len(velocity) - 1):
+    clock += [clock[-1] + time]
+
+f3 = plt.figure(4)
+plt.plot(clock, velocity, '-')
+plt.ylabel('Velocity')
+plt.xlabel('Time in au')
+
+plt.savefig("FP-0.010-Velocity", dpi=400, orientation='portrait')
 
 plt.show()
