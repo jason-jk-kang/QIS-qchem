@@ -150,7 +150,7 @@ plt.plot(adjusted_lengths, UCCSD_force_list, color='orange')
 plt.ylabel('Force in Hartree / Bohrs')
 plt.xlabel('Bond length in bohrs')
 
-plt.savefig("FP-0.020-Force", dpi=400, orientation='portrait')
+plt.savefig("FP-015-Force", dpi=400, orientation='portrait')
 
 plt.show()
 
@@ -163,7 +163,7 @@ plt.plot(bond_lengths, UCCSD_energies, '-', color='orange')
 plt.ylabel('Energy in Hartree')
 plt.xlabel('Bond length in bohr')
 
-plt.savefig("FP-0.020-Energy", dpi=400, orientation='portrait')
+plt.savefig("FP-015-Energy", dpi=400, orientation='portrait')
 
 plt.show()
 
@@ -179,7 +179,7 @@ plt.plot(clock, bond_lengths, '-')
 plt.ylabel('Distance in bohrs')
 plt.xlabel('Time in au')
 
-plt.savefig("FP-0.020-Distance", dpi=400, orientation='portrait')
+plt.savefig("FP-015-Distance", dpi=400, orientation='portrait')
 
 plt.show()
 
@@ -196,6 +196,6 @@ plt.plot(clock, velocity, '-')
 plt.ylabel('Velocity')
 plt.xlabel('Time in au')
 
-plt.savefig("FP-0.020-Velocity", dpi=400, orientation='portrait')
+plt.savefig("FP-015-Velocity", dpi=400, orientation='portrait')
 
 plt.show()

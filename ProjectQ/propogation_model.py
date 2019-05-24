@@ -64,23 +64,24 @@ active_space_stop = 3
 # Set record list for plotting. Existing information input from ProjectQ simulator.
 fci_force_list = [0]
 UCCSD_force_list = [0]
-bond_lengths = [1.37005, 1.51178]
-fci_energies = [-1.603565128035238, -1.6004199263636436]
-UCCSD_energies = [-1.5836999664044602, -1.5771459927119653]
+bond_lengths = [1.37005]
+fci_energies = []
+UCCSD_energies = []
 opt_amplitudes = [-5.7778375420113214e-08, -1.6441896890657683e-06, 9.223967507357728e-08, 0.03732738061624315, 1.5707960798368998]
 
 # Initial Information Computed by FCI on nuclei position 1.51178 bohrs. velocity at 300K approx .394
-velocity = [0.005]
+velocity = [0.03]
 mass = 1836
 time = .5
 counter = 1
 
-while (counter < 1500):
+while (counter < 5):
 
     # Update lists
-    distance_delta = bond_lengths[-1] - bond_lengths[-2]
-    fci_force_list += [-(fci_energies[-1] - fci_energies[-2])/distance_delta]
-    UCCSD_force_list += [-(UCCSD_energies[-1] - UCCSD_energies[-2])/distance_delta]
+    if len(fci_energies) > 1:
+        distance_delta = bond_lengths[-1] - bond_lengths[-2]
+        fci_force_list += [-(fci_energies[-1] - fci_energies[-2])/distance_delta]
+        # UCCSD_force_list += [-(UCCSD_energies[-1] - UCCSD_energies[-2])/distance_delta]
 
     # Compute distance after force propogation
     bond_lengths += [bond_lengths[-1] + time*velocity[-1] + 0.5 * fci_force_list[-1]/mass * (time**2)]
@@ -106,51 +107,50 @@ while (counter < 1500):
                          run_ccsd=run_ccsd,
                          run_fci=run_fci)
 
-    # Use a Jordan-Wigner encoding, and compress to remove 0 imaginary components
-    molecular_hamiltonian = molecule.get_molecular_hamiltonian(
-        occupied_indices=range(active_space_start),
-        active_indices=range(active_space_start, active_space_stop))
-
-    fermion_hamiltonian = get_fermion_operator(molecular_hamiltonian)
-    qubit_hamiltonian = jordan_wigner(fermion_hamiltonian)
-    qubit_hamiltonian.compress()
-    compiler_engine = uccsd_trotter_engine()
-    initial_energy = energy_objective(opt_amplitudes)
-
-    # Run VQE Optimization to find new CCSD parameters
-    opt_result = minimize(energy_objective, opt_amplitudes,
-                          method="CG", options={'disp':True})
-
-    opt_energy, opt_amplitudes = opt_result.fun, opt_result.x
+    # # Use a Jordan-Wigner encoding, and compress to remove 0 imaginary components
+    # molecular_hamiltonian = molecule.get_molecular_hamiltonian(
+    #     occupied_indices=range(active_space_start),
+    #     active_indices=range(active_space_start, active_space_stop))
+    #
+    # fermion_hamiltonian = get_fermion_operator(molecular_hamiltonian)
+    # qubit_hamiltonian = jordan_wigner(fermion_hamiltonian)
+    # qubit_hamiltonian.compress()
+    # compiler_engine = uccsd_trotter_engine()
+    # initial_energy = energy_objective(opt_amplitudes)
+    #
+    # # Run VQE Optimization to find new CCSD parameters
+    # opt_result = minimize(energy_objective, opt_amplitudes,
+    #                       method="CG", options={'disp':True})
+    #
+    # opt_energy, opt_amplitudes = opt_result.fun, opt_result.x
 
     fci_energies += [float(molecule.fci_energy)]
-    UCCSD_energies += [float(opt_energy)]
+    # UCCSD_energies += [float(opt_energy)]
 
     # Print Results
     print("\nResults for {}:".format(molecule.name))
-    print("Optimal UCCSD Singlet Energy: {}".format(opt_energy))
+    # print("Optimal UCCSD Singlet Energy: {}".format(opt_energy))
     print("Exact FCI Energy: {} Hartrees".format(molecule.fci_energy))
 
     # Iterate counter
     counter += 1
 
+
 # Adjust lists
 fci_force_list = fci_force_list[1:]
-UCCSD_force_list = UCCSD_force_list[1:]
-fci_energies = fci_energies[:-1]
-UCCSD_energies = UCCSD_energies[:-1]
-bond_lengths = bond_lengths[:-1]
-adjusted_lengths = [a+1/2*(b - a) for a, b in zip(bond_lengths, bond_lengths[1:])]
+# UCCSD_force_list = UCCSD_force_list[1:]
 
+bond_lengths = bond_lengths[1:]
+adjusted_lengths = [a+1/2*(b - a) for a, b in zip(bond_lengths, bond_lengths[1:])]
 
 # Plot Force Over Length
 f0 = plt.figure(0)
-plt.plot(adjusted_lengths, fci_force_list, '-')
-plt.plot(adjusted_lengths, UCCSD_force_list, color='orange')
+plt.plot(adjusted_lengths[1:], fci_force_list, 'x-')
+# plt.plot(adjusted_lengths, UCCSD_force_list, color='orange')
 plt.ylabel('Force in Hartree / Bohrs')
 plt.xlabel('Bond length in bohrs')
 
-plt.savefig("FP-0.005-Force", dpi=400, orientation='portrait')
+plt.savefig("FP-0-Force", dpi=400, orientation='portrait')
 
 plt.show()
 
@@ -158,12 +158,12 @@ plt.show()
 
 # Plot Energy Over Length
 f2 = plt.figure(1)
-plt.plot(bond_lengths, fci_energies, '-')
-plt.plot(bond_lengths, UCCSD_energies, '-', color='orange')
+plt.plot(bond_lengths, fci_energies, 'x-')
+# plt.plot(bond_lengths, UCCSD_energies, '-', color='orange')
 plt.ylabel('Energy in Hartree')
 plt.xlabel('Bond length in bohr')
 
-plt.savefig("FP-0.005-Energy", dpi=400, orientation='portrait')
+plt.savefig("FP-0-Energy", dpi=400, orientation='portrait')
 
 plt.show()
 
@@ -179,7 +179,7 @@ plt.plot(clock, bond_lengths, '-')
 plt.ylabel('Distance in bohrs')
 plt.xlabel('Time in au')
 
-plt.savefig("FP-0.005-Distance", dpi=400, orientation='portrait')
+plt.savefig("FP-0-distance", dpi=400, orientation='portrait')
 
 plt.show()
 
@@ -196,6 +196,6 @@ plt.plot(clock, velocity, '-')
 plt.ylabel('Velocity')
 plt.xlabel('Time in au')
 
-plt.savefig("FP-0.005-Velocity", dpi=400, orientation='portrait')
+plt.savefig("FP-0-Velocity", dpi=400, orientation='portrait')
 
 plt.show()
