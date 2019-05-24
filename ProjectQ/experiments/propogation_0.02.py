@@ -64,23 +64,24 @@ active_space_stop = 3
 # Set record list for plotting. Existing information input from ProjectQ simulator.
 fci_force_list = [0]
 UCCSD_force_list = [0]
-bond_lengths = [1.37005, 1.51178]
-fci_energies = [-1.603565128035238, -1.6004199263636436]
-UCCSD_energies = [-1.5836999664044602, -1.5771459927119653]
+bond_lengths = [1.37005]
+fci_energies = []
+UCCSD_energies = []
 opt_amplitudes = [-5.7778375420113214e-08, -1.6441896890657683e-06, 9.223967507357728e-08, 0.03732738061624315, 1.5707960798368998]
 
 # Initial Information Computed by FCI on nuclei position 1.51178 bohrs. velocity at 300K approx .394
-velocity = [0.0]
+velocity = [0.02]
 mass = 1836
 time = .5
 counter = 1
 
-while (counter < 1500):
+while (counter < 1500) or (bond_lengths[-1] > 6):
 
     # Update lists
-    distance_delta = bond_lengths[-1] - bond_lengths[-2]
-    fci_force_list += [-(fci_energies[-1] - fci_energies[-2])/distance_delta]
-    UCCSD_force_list += [-(UCCSD_energies[-1] - UCCSD_energies[-2])/distance_delta]
+    if len(fci_energies) > 1:
+        distance_delta = bond_lengths[-1] - bond_lengths[-2]
+        fci_force_list += [-(fci_energies[-1] - fci_energies[-2])/distance_delta]
+        UCCSD_force_list += [-(UCCSD_energies[-1] - UCCSD_energies[-2])/distance_delta]
 
     # Compute distance after force propogation
     bond_lengths += [bond_lengths[-1] + time*velocity[-1] + 0.5 * fci_force_list[-1]/mass * (time**2)]
@@ -134,23 +135,24 @@ while (counter < 1500):
     # Iterate counter
     counter += 1
 
+
 # Adjust lists
 fci_force_list = fci_force_list[1:]
 UCCSD_force_list = UCCSD_force_list[1:]
-fci_energies = fci_energies[:-1]
-UCCSD_energies = UCCSD_energies[:-1]
-bond_lengths = bond_lengths[:-1]
+bond_lengths = bond_lengths[1:]
 adjusted_lengths = [a+1/2*(b - a) for a, b in zip(bond_lengths, bond_lengths[1:])]
+
+
 
 
 # Plot Force Over Length
 f0 = plt.figure(0)
-plt.plot(adjusted_lengths, fci_force_list, '-')
-plt.plot(adjusted_lengths, UCCSD_force_list, color='orange')
+plt.plot(adjusted_lengths[1:], fci_force_list, '-')
+plt.plot(adjusted_lengths[1:], UCCSD_force_list, color='orange')
 plt.ylabel('Force in Hartree / Bohrs')
 plt.xlabel('Bond length in bohrs')
 
-plt.savefig("FP-020-Force", dpi=400, orientation='portrait')
+plt.savefig("FP-02-Force", dpi=400, orientation='portrait')
 
 plt.show()
 
@@ -163,7 +165,7 @@ plt.plot(bond_lengths, UCCSD_energies, '-', color='orange')
 plt.ylabel('Energy in Hartree')
 plt.xlabel('Bond length in bohr')
 
-plt.savefig("FP-020-Energy", dpi=400, orientation='portrait')
+plt.savefig("FP-02-Energy", dpi=400, orientation='portrait')
 
 plt.show()
 
@@ -179,7 +181,7 @@ plt.plot(clock, bond_lengths, '-')
 plt.ylabel('Distance in bohrs')
 plt.xlabel('Time in au')
 
-plt.savefig("FP-020-Distance", dpi=400, orientation='portrait')
+plt.savefig("FP-02-distance", dpi=400, orientation='portrait')
 
 plt.show()
 
@@ -196,6 +198,6 @@ plt.plot(clock, velocity, '-')
 plt.ylabel('Velocity')
 plt.xlabel('Time in au')
 
-plt.savefig("FP-020-Velocity", dpi=400, orientation='portrait')
+plt.savefig("FP-02-Velocity", dpi=400, orientation='portrait')
 
 plt.show()
