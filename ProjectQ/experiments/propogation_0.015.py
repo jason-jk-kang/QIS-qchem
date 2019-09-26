@@ -70,7 +70,7 @@ UCCSD_energies = []
 opt_amplitudes = [-5.7778375420113214e-08, -1.6441896890657683e-06, 9.223967507357728e-08, 0.03732738061624315, 1.5707960798368998]
 
 # Initial Information Computed by FCI on nuclei position 1.51178 bohrs. velocity at 300K approx .394
-velocity = [0.05]
+velocity = [0.015]
 mass = 1836
 time = .5
 counter = 1
@@ -152,7 +152,7 @@ plt.plot(adjusted_lengths[1:], UCCSD_force_list, color='orange')
 plt.ylabel('Force in Hartree / Bohrs')
 plt.xlabel('Bond length in bohrs')
 
-plt.savefig("FP-05-Force", dpi=400, orientation='portrait')
+plt.savefig("FP-015-Force", dpi=400, orientation='portrait')
 
 plt.show()
 
@@ -165,7 +165,7 @@ plt.plot(bond_lengths, UCCSD_energies, '-', color='orange')
 plt.ylabel('Energy in Hartree')
 plt.xlabel('Bond length in bohr')
 
-plt.savefig("FP-05-Energy", dpi=400, orientation='portrait')
+plt.savefig("FP-015-Energy", dpi=400, orientation='portrait')
 
 plt.show()
 
@@ -181,7 +181,7 @@ plt.plot(clock, bond_lengths, '-')
 plt.ylabel('Distance in bohrs')
 plt.xlabel('Time in au')
 
-plt.savefig("FP-05-distance", dpi=400, orientation='portrait')
+plt.savefig("FP-015-distance", dpi=400, orientation='portrait')
 
 plt.show()
 
@@ -198,6 +198,6 @@ plt.plot(clock, velocity, '-')
 plt.ylabel('Velocity')
 plt.xlabel('Time in au')
 
-plt.savefig("FP-05-Velocity", dpi=400, orientation='portrait')
+plt.savefig("FP-015-Velocity", dpi=400, orientation='portrait')
 
 plt.show()

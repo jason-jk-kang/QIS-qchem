@@ -75,7 +75,7 @@ mass = 1836
 time = .5
 counter = 1
 
-while (counter < 1500) or (bond_lengths[-1] > 6):
+while (counter < 1500) and (abs(bond_lengths[-1]) < 8):
 
     # Update lists
     if len(fci_energies) > 1:

@@ -89,7 +89,6 @@ packed_amps = uccsd_singlet_get_packed_amplitudes(molecule.ccsd_single_amps, mol
 
 print(packed_amps)
 
-
 n_amplitudes = uccsd_singlet_paramsize(molecule.n_qubits, molecule.n_electrons)
 initial_amplitudes = [0.01] * n_amplitudes
 initial_energy = energy_objective(initial_amplitudes)
@@ -107,8 +106,6 @@ print("Classical CCSD Energy: {} Hartrees".format(molecule.ccsd_energy))
 print("Exact FCI Energy: {} Hartrees".format(molecule.fci_energy))
 print("Initial Energy of UCCSD with CCSD amplitudes: {} Hartrees".format(initial_energy))
 
-
-#
 # compiler_engine = uccsd_trotter_engine(CommandPrinter())
 #
 # wavefunction = compiler_engine.allocate_qureg(molecule.n_qubits)

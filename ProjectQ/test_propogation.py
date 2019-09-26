@@ -88,13 +88,6 @@ distance_counter += acceleration*1/2*time**2 + initial_velocity*time
 
 print("This is function_run no.{} for distance {}".format(counter, distance_counter))
 
-
-
-
-
-
-
-
 geometry = [('H', (0., 0., 0.)), ('H', (0., 0., distance_counter)),
             ('H', (0., 0., 3.3))]
 
@@ -134,17 +127,6 @@ fci_energies += [float(molecule.fci_energy)]
 print("\n Results for {}:".format(molecule.name))
 print("Optimal UCCSD Singlet Energy: {}".format(opt_energy))
 print("Exact FCI Energy: {} Hartrees".format(molecule.fci_energy))
-
-
-
-
-
-
-
-
-
-
-
 
 
 

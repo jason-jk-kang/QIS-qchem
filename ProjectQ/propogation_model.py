@@ -75,7 +75,7 @@ mass = 1836
 time = .5
 counter = 1
 
-while (counter < 5):
+while (counter < 1500) and (abs(bond_lengths[-1]) < 8):
 
     # Update lists
     if len(fci_energies) > 1:
@@ -115,7 +115,7 @@ while (counter < 5):
     fermion_hamiltonian = get_fermion_operator(molecular_hamiltonian)
     qubit_hamiltonian = jordan_wigner(fermion_hamiltonian)
     qubit_hamiltonian.compress()
-    compiler_engine = uccsd_trotter_engine()
+    compiler_engine = uccsd_trotter_engine(CommandPrinter())
     initial_energy = energy_objective(opt_amplitudes)
 
     # Run VQE Optimization to find new CCSD parameters

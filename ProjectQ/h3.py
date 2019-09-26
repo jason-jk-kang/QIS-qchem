@@ -167,7 +167,7 @@ print ("This is the energy_delta:", energy_delta)
 length_delta = [b - a for a, b in zip(bond_lengths, bond_lengths[1:])]
 print ("This is the length_delta:", length_delta)
 
-force = [a/b for a, b in zip(energy_delta, length_delta)]
+force = [-a/b for a, b in zip(energy_delta, length_delta)]
 print ("This is the force:", force)
 
 lengths = [a + 1/2*(b - a) for a, b in zip(bond_lengths, bond_lengths[1:])]

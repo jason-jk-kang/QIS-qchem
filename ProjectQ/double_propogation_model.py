@@ -64,13 +64,15 @@ active_space_stop = 3
 # Set record list for plotting. Existing information input from ProjectQ simulator.
 fci_force_list = [0]
 UCCSD_force_list = [0]
-bond_lengths = [1.37005]
+
+bond_lengths = {1: [0], 3:[6.23609576231]}
 fci_energies = []
 UCCSD_energies = []
 opt_amplitudes = [-5.7778375420113214e-08, -1.6441896890657683e-06, 9.223967507357728e-08, 0.03732738061624315, 1.5707960798368998]
 
 # Initial Information Computed by FCI on nuclei position 1.51178 bohrs. velocity at 300K approx .394
-velocity = [0.05]
+velocity = [0.036]
+velocity = {1 : [velocity], 3:[-velocity]}
 mass = 1836
 time = .5
 counter = 1
@@ -84,8 +86,13 @@ while (counter < 1500) and (abs(bond_lengths[-1]) < 8):
         UCCSD_force_list += [-(UCCSD_energies[-1] - UCCSD_energies[-2])/distance_delta]
 
     # Compute distance after force propogation
-    bond_lengths += [bond_lengths[-1] + time*velocity[-1] + 0.5 * fci_force_list[-1]/mass * (time**2)]
-    velocity += [velocity[-1] + fci_force_list[-1]/mass * time]
+    bond_length[1] += [bond_length[1][-1] + time*velocity[1][-1] +
+                       0.5 * fci_force_list[-1]/mass * (time**2)]
+    velocity[1] += [velocity[1][-1] + fci_force_list[-1]/mass * time]
+
+    bond_length[3] += [bond_length[3][-1] + time*velocity[3][-1] +
+                       0.5 * fci_force_list[-1]/mass * (time**2)]
+    velocity[3] += [velocity[3][-1] + fci_force_list[-1]/mass * time]
 
     # Print Simulation Information
     print("\nThis is function_run #{}".format(counter))
@@ -94,8 +101,9 @@ while (counter < 1500) and (abs(bond_lengths[-1]) < 8):
     print("velocity:{}".format(velocity[-2]))
 
     # Begin Running Simulation, Convert distance_counter to angstroms
-    geometry = [('H', (0., 0., 0.)), ('H', (0., 0., bond_lengths[-1] * 0.529177249)),
-                ('H', (0., 0., 3.3))]
+    geometry = [('H', (0., 0., bond_lengths[1][-1] * 0.529177249)),
+                ('H', (0., 0., 0.725)),
+                ('H', (0., 0., bond_lengths[3][-1] * 0.529177249))]
 
     # Generate and populate instance of MolecularData.
     molecule = MolecularData(geometry, basis, spin, description="h3")
@@ -152,7 +160,7 @@ plt.plot(adjusted_lengths[1:], UCCSD_force_list, color='orange')
 plt.ylabel('Force in Hartree / Bohrs')
 plt.xlabel('Bond length in bohrs')
 
-plt.savefig("FP-05-Force", dpi=400, orientation='portrait')
+plt.savefig("FP-0-Force", dpi=400, orientation='portrait')
 
 plt.show()
 
@@ -165,7 +173,7 @@ plt.plot(bond_lengths, UCCSD_energies, '-', color='orange')
 plt.ylabel('Energy in Hartree')
 plt.xlabel('Bond length in bohr')
 
-plt.savefig("FP-05-Energy", dpi=400, orientation='portrait')
+plt.savefig("FP-0-Energy", dpi=400, orientation='portrait')
 
 plt.show()
 
@@ -181,7 +189,7 @@ plt.plot(clock, bond_lengths, '-')
 plt.ylabel('Distance in bohrs')
 plt.xlabel('Time in au')
 
-plt.savefig("FP-05-distance", dpi=400, orientation='portrait')
+plt.savefig("FP-0-distance", dpi=400, orientation='portrait')
 
 plt.show()
 
@@ -198,6 +206,6 @@ plt.plot(clock, velocity, '-')
 plt.ylabel('Velocity')
 plt.xlabel('Time in au')
 
-plt.savefig("FP-05-Velocity", dpi=400, orientation='portrait')
+plt.savefig("FP-0-Velocity", dpi=400, orientation='portrait')
 
 plt.show()
