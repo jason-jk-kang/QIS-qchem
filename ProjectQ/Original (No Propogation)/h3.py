@@ -20,6 +20,11 @@ import matplotlib.pyplot as plt
 
 from openfermionpyscf import run_pyscf
 
+"""
+This is the original h3 calculation using a simple counter that moved the center nuclei
+over a range of values. No propogation
+"""
+
 def energy_objective(packed_amplitudes):
     """Evaluate the energy of a UCCSD singlet wavefunction with packed_amplitudes
     Args:
@@ -83,7 +88,6 @@ for point in range(1, n_points + 1):
 
     # Generate and populate instance of MolecularData.
     molecule = MolecularData(geometry, basis, spin, description=str(round(bond_length, 2)))
-
 
     molecule = run_pyscf(molecule,
                          run_scf=run_scf,
@@ -155,9 +159,6 @@ plt.xlabel('Bond length in angstrom')
 plt.savefig("ProjectQ-h3-graph", dpi=400, orientation='portrait')
 
 plt.show()
-
-
-
 
 
 f2 = plt.figure(1)
