@@ -14,7 +14,7 @@ from Init import Atom, System
 import matplotlib.pyplot as plt
 from openfermionpyscf import run_pyscf
 
-def energy_objective(packed_amplitudes):
+def energy_objective(packed_amplitudes, molecule, qubit_hamiltonian, compiler_engine):
     """Evaluate the energy of a UCCSD singlet wavefunction with packed_amplitudes
     Args:
         packed_amplitudes(ndarray): Compact array that stores the unique
@@ -62,13 +62,13 @@ def run_simulation (system, indx):
 
     # Begin Running Simulation, Convert distance_counter to angstroms
     if indx == 0:
-        geometry = [('H', (0., 0., system[0].stand_by_position[-1] * 0.529177249)),
-                    ('H', (0., 0., system[1].position[-1] * 0.529177249)),
-                    ('H', (0., 0., system[2].position[-1] * 0.529177249))]
+        geometry = [('H', (0., 0., system.atoms[0].stand_by_position * 0.529177249)),
+                    ('H', (0., 0., system.atoms[1].position[-1] * 0.529177249)),
+                    ('H', (0., 0., system.atoms[2].position[-1] * 0.529177249))]
     elif indx == 2: 
-        geometry = [('H', (0., 0., system[0].position[-1] * 0.529177249)),
-                    ('H', (0., 0., system[1].position[-1] * 0.529177249)),
-                    ('H', (0., 0., system[2].stand_by_position[-1] * 0.529177249))]
+        geometry = [('H', (0., 0., system.atoms[0].position[-1] * 0.529177249)),
+                    ('H', (0., 0., system.atoms[1].position[-1] * 0.529177249)),
+                    ('H', (0., 0., system.atoms[2].stand_by_position * 0.529177249))]
 
     # Generate and populate instance of MolecularData.
     molecule = MolecularData(geometry, basis, spin, description="h3")
@@ -89,10 +89,10 @@ def run_simulation (system, indx):
     qubit_hamiltonian = jordan_wigner(fermion_hamiltonian)
     qubit_hamiltonian.compress()
     compiler_engine = uccsd_trotter_engine()
-    initial_energy = energy_objective(opt_amplitudes)
+    initial_energy = energy_objective(system.opt_amplitudes, molecule, qubit_hamiltonian, compiler_engine)
 
     # Run VQE Optimization to find new CCSD parameters
-    opt_result = minimize(energy_objective, opt_amplitudes,
+    opt_result = minimize(energy_objective, system.opt_amplitudes, (molecule, qubit_hamiltonian, compiler_engine),
                           method="CG", options={'disp':True})
 
     opt_energy, system.opt_amplitudes = opt_result.fun, opt_result.x
@@ -104,13 +104,13 @@ def run_simulation (system, indx):
 
 #given a system and a index, I will calculate the intended energy of the propogation on that index
 def call(S, indx):
-    S[indx].update_forces()
-    S[indx].propogate()
+    S.atoms[indx].update_forces()
+    S.atoms[indx].propogate()
     
     results = run_simulation(S, indx)
 
-    S[indx].fci_energies.append(results["FCI Energy"])
-    S[indx].UCCSD_energies.append(results["UCCSD Energy"])
+    S.atoms[indx].fci_energies.append(results["FCI Energy"])
+    S.atoms[indx].UCCSD_energies.append(results["UCCSD Energy"])
 
 def double_propogation():
     opt_amplitudes = [-5.7778375420113214e-08, -1.6441896890657683e-06, 9.223967507357728e-08, 0.03732738061624315, 1.5707960798368998]
@@ -118,13 +118,17 @@ def double_propogation():
     
     # Initalize System
     H1 = Atom('H', 1, 0.036, 0, True)
-    H2 = Atom('H', 2, 1.37, False)
-    H2 = Atom('H', 3, 6.23609576231, True)
-    System = System([H1, H2, H3])
+    H2 = Atom('H', 2, 0, 1.37, False)
+    H3 = Atom('H', 3, -0.036, 6.23609576231, True)
+    Sys = System([H1, H2, H3])
     
     while counter < 1500:
-        call(System, 0)
-        call(System, 2)
+        call(Sys, 0)
+        call(Sys, 2)
         System.update_propogation
         counter += 1
+        print(counter)
+        
+
+double_propogation()
 

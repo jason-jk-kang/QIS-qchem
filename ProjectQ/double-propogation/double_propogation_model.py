@@ -15,7 +15,6 @@ import matplotlib.pyplot as plt
 
 from openfermionpyscf import run_pyscf
 
-
 def energy_objective(packed_amplitudes):
     """Evaluate the energy of a UCCSD singlet wavefunction with packed_amplitudes
     Args:
@@ -43,66 +42,33 @@ def energy_objective(packed_amplitudes):
     compiler_engine.flush()
     return energy
 
+def distance_propogation (indx):
+    return [bond_length[i][-1] + time*velocity[i][-1] + 0.5 * fci_force_list[-1]/mass * (time**2)]
 
-# Load saved file for H3.
-basis = 'sto-3g'
-spin = 2
+def velocity_propogation (indx):
+    return [velocity[i][-1] + fci_force_list[-1]/mass * time]
 
-# Set calculation parameters.
-run_scf = 1
-run_mp2 = 1
-run_cisd = 0
-run_ccsd = 0
-run_fci = 1
-delete_input = True
-delete_output = True
+def run_simulation (bond_lengths):
+    # Load saved file for H3.
+    basis = 'sto-3g'
+    spin = 2
 
-# Set Hamiltonian parameters.
-active_space_start = 1
-active_space_stop = 3
+    # Set Hamiltonian parameters.
+    active_space_start = 1
+    active_space_stop = 3
 
-# Set record list for plotting. Existing information input from ProjectQ simulator.
-fci_force_list = [0]
-UCCSD_force_list = [0]
-
-bond_lengths = {1: [0], 3:[6.23609576231]}
-fci_energies = []
-UCCSD_energies = []
-opt_amplitudes = [-5.7778375420113214e-08, -1.6441896890657683e-06, 9.223967507357728e-08, 0.03732738061624315, 1.5707960798368998]
-
-# Initial Information Computed by FCI on nuclei position 1.51178 bohrs. velocity at 300K approx .394
-velocity = [0.036]
-velocity = {1 : [velocity], 3:[-velocity]}
-mass = 1836
-time = .5
-counter = 1
-
-while (counter < 1500) and (abs(bond_lengths[-1]) < 8):
-
-    # Update lists
-    if len(fci_energies) > 1:
-        distance_delta = bond_lengths[-1] - bond_lengths[-2]
-        fci_force_list += [-(fci_energies[-1] - fci_energies[-2])/distance_delta]
-        UCCSD_force_list += [-(UCCSD_energies[-1] - UCCSD_energies[-2])/distance_delta]
-
-    # Compute distance after force propogation
-    bond_length[1] += [bond_length[1][-1] + time*velocity[1][-1] +
-                       0.5 * fci_force_list[-1]/mass * (time**2)]
-    velocity[1] += [velocity[1][-1] + fci_force_list[-1]/mass * time]
-
-    bond_length[3] += [bond_length[3][-1] + time*velocity[3][-1] +
-                       0.5 * fci_force_list[-1]/mass * (time**2)]
-    velocity[3] += [velocity[3][-1] + fci_force_list[-1]/mass * time]
-
-    # Print Simulation Information
-    print("\nThis is function_run #{}".format(counter))
-    print("distance: {} bohrs".format(bond_lengths[-1]))
-    print("force:{}".format(fci_force_list[-1]))
-    print("velocity:{}".format(velocity[-2]))
+    # Set calculation parameters.
+    run_scf = 1
+    run_mp2 = 1
+    run_cisd = 0
+    run_ccsd = 0
+    run_fci = 1
+    delete_input = True
+    delete_output = True
 
     # Begin Running Simulation, Convert distance_counter to angstroms
     geometry = [('H', (0., 0., bond_lengths[1][-1] * 0.529177249)),
-                ('H', (0., 0., 0.725)),
+                ('H', (0., 0., bond_lengths[2][-1] * 0.529177249)),
                 ('H', (0., 0., bond_lengths[3][-1] * 0.529177249))]
 
     # Generate and populate instance of MolecularData.
@@ -132,13 +98,50 @@ while (counter < 1500) and (abs(bond_lengths[-1]) < 8):
 
     opt_energy, opt_amplitudes = opt_result.fun, opt_result.x
 
-    fci_energies += [float(molecule.fci_energy)]
-    UCCSD_energies += [float(opt_energy)]
+    return ({"Name" : molecule.name, "UCCSD Energy" : opt_energy,
+             "FCI Energy" : molecule.fci_energy})
+
+
+# Set record list for plotting. Existing information input from ProjectQ simulator.
+fci_force_list = [0]
+UCCSD_force_list = [0]
+
+bond_lengths = {1: [0], 2: [1.37], 3: [6.23609576231]}
+fci_energies = []
+UCCSD_energies = []
+opt_amplitudes = [-5.7778375420113214e-08, -1.6441896890657683e-06, 9.223967507357728e-08, 0.03732738061624315, 1.5707960798368998]
+
+# Initial Information Computed by FCI on nuclei position 1.51178 bohrs. velocity at 300K approx .394
+velocity = {1 : [0.036], 3 : [-0.036]}
+mass = 1836
+time = .5
+counter = 1
+
+while (counter < 1500) and (abs(bond_lengths[-1]) < 8):
+
+    # Update lists
+    if len(fci_energies) > 1:
+        distance_delta = bond_lengths[-1] - bond_lengths[-2]
+        fci_force_list += [-(fci_energies[-1] - fci_energies[-2])/distance_delta]
+        UCCSD_force_list += [-(UCCSD_energies[-1] - UCCSD_energies[-2])/distance_delta]
+
+    # propogations
+    bond_length[1] += distance_propogation(1)
+    velocity[1] += velocity_propogation(1)
+    bond_length[3] += distance_propogation(3)
+    velocity[3] += velocity_propogation(3)
+
+    results = run_simulation(bond_lengths)
+
+    fci_energies += [results["FCI Energy"]]
+    UCCSD_energies += [results["UCCSD Energy"]]
 
     # Print Results
-    print("\nResults for {}:".format(molecule.name))
-    print("Optimal UCCSD Singlet Energy: {}".format(opt_energy))
-    print("Exact FCI Energy: {} Hartrees".format(molecule.fci_energy))
+
+    print("""\nResults for {}:
+    Optimal UCCSD Singlet Energy: {}
+    Exact FCI Energy: {} Hartrees"""
+    .format(results["Name"], opt_energy, results["FCI Energy"]))
 
     # Iterate counter
     counter += 1
@@ -149,9 +152,6 @@ fci_force_list = fci_force_list[1:]
 UCCSD_force_list = UCCSD_force_list[1:]
 bond_lengths = bond_lengths[1:]
 adjusted_lengths = [a+1/2*(b - a) for a, b in zip(bond_lengths, bond_lengths[1:])]
-
-
-
 
 # Plot Force Over Length
 f0 = plt.figure(0)
@@ -164,8 +164,6 @@ plt.savefig("FP-0-Force", dpi=400, orientation='portrait')
 
 plt.show()
 
-
-
 # Plot Energy Over Length
 f2 = plt.figure(1)
 plt.plot(bond_lengths, fci_energies, '-')
@@ -176,8 +174,6 @@ plt.xlabel('Bond length in bohr')
 plt.savefig("FP-0-Energy", dpi=400, orientation='portrait')
 
 plt.show()
-
-
 
 # Plot Distance Over Time
 clock = [time]
@@ -192,10 +188,6 @@ plt.xlabel('Time in au')
 plt.savefig("FP-0-distance", dpi=400, orientation='portrait')
 
 plt.show()
-
-
-
-
 
 clock = [time]
 for x in range(len(velocity) - 1):
