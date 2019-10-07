@@ -113,6 +113,7 @@ while (counter < 1500) and (abs(bond_lengths[-1]) < 8):
         active_indices=range(active_space_start, active_space_stop))
 
     fermion_hamiltonian = get_fermion_operator(molecular_hamiltonian)
+    print(fermion_hamiltonian)
     qubit_hamiltonian = jordan_wigner(fermion_hamiltonian)
     qubit_hamiltonian.compress()
     compiler_engine = uccsd_trotter_engine(CommandPrinter())
