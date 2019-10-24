@@ -54,7 +54,7 @@ def run_simulation (system, indx):
     run_scf = 1
     run_mp2 = 1
     run_cisd = 0
-    run_ccsd = 0
+    run_ccsd = 1
     run_fci = 1
     delete_input = True
     delete_output = True
@@ -101,10 +101,11 @@ def run_simulation (system, indx):
     initial_energy = energy_objective(system.opt_amplitudes, molecule, qubit_hamiltonian, compiler_engine)
 
     # Run VQE Optimization to find new CCSD parameters
-    opt_result = minimize(energy_objective, system.opt_amplitudes, (molecule, qubit_hamiltonian, compiler_engine),
-                          method="CG", options={'disp':True})
+    opt_result = minimize(energy_objective, system.opt_amplitudes, (molecule, qubit_hamiltonian, compiler_engine), method="CG", options={'disp':True})
 
     opt_energy, system.opt_amplitudes = opt_result.fun, opt_result.x
+    
+    ## Can I pull amplitudes from FCI or CCSD?????
 
-    return ({"Name" : molecule.name, "UCCSD Energy" : opt_energy,
-             "FCI Energy" : molecule.fci_energy})
+    return ({"Name" : molecule.name, "VQE Energy" : opt_energy,
+             "FCI Energy" : molecule.fci_energy, "UCCSD Energy": molecule.ccsd_energy})

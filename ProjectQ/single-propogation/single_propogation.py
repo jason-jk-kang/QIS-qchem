@@ -4,7 +4,6 @@ sys.path.append("../")
 from init import *
 
 def single_propogation(velocity):
-    opt_amplitudes = [-5.7778375420113214e-08, -1.6441896890657683e-06, 9.223967507357728e-08, 0.03732738061624315, 1.5707960798368998]
     counter = 1
     
     # Initalize System, position is in au
@@ -16,7 +15,7 @@ def single_propogation(velocity):
     
     while counter < 1000 and Sys.in_boundary():
         Sys.calculate_individual_energy(1)
-        Sys.update_propogation()
+        Sys.fill_standby()
         counter += 1
         print(counter)
     
