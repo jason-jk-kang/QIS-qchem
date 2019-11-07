@@ -8,10 +8,11 @@ from openfermion.hamiltonians import MolecularData
 from openfermion.transforms import jordan_wigner, get_fermion_operator, get_sparse_operator
 from openfermion.utils import uccsd_singlet_paramsize, uccsd_singlet_get_packed_amplitudes
 from projectq.ops import X, All, Measure
-from projectq.backends import CommandPrinter, CircuitDrawer, IBMBackend
+from projectq.backends import CommandPrinter, CircuitDrawer, IBMBackend, Simulator
 from pyscf import mp, fci
 import matplotlib.pyplot as plt
 from openfermionpyscf import run_pyscf
+from projectq.meta import insert_engine
 
 def energy_objective(packed_amplitudes, molecule, qubit_hamiltonian, compiler_engine):
     """Evaluate the energy of a UCCSD singlet wavefunction with packed_amplitudes
@@ -31,10 +32,15 @@ def energy_objective(packed_amplitudes, molecule, qubit_hamiltonian, compiler_en
     evolution_operator = uccsd_singlet_evolution(packed_amplitudes,
                                                  molecule.n_qubits,
                                                  molecule.n_electrons)
+
+    # print("what is this,", type(evolution_operator))
+    # print("Evolution Operator")
+    # print(evolution_operator)
     evolution_operator | wavefunction
     compiler_engine.flush()
 
     # Evaluate the energy and reset wavefunction
+    # print("Qubit Hamiltonian", qubit_hamiltonian)
     energy = compiler_engine.backend.get_expectation_value(qubit_hamiltonian, wavefunction)
     All(Measure) | wavefunction
     compiler_engine.flush()
@@ -93,9 +99,16 @@ def run_simulation (system, indx):
     molecular_hamiltonian = molecule.get_molecular_hamiltonian()
 
     fermion_hamiltonian = get_fermion_operator(molecular_hamiltonian)
-    print(fermion_hamiltonian)
+    # print(fermion_hamiltonian)
     qubit_hamiltonian = jordan_wigner(fermion_hamiltonian)
     qubit_hamiltonian.compress()
+    
+    # # Messing with Engines
+    # backend = IBMBackend()
+    # compiler_engine = uccsd_trotter_engine(backend)
+    # cmd_printer = CommandPrinter()
+    # insert_engine(backend, cmd_printer)
+    
     compiler_engine = uccsd_trotter_engine()
     
     packed_amplitudes = uccsd_singlet_get_packed_amplitudes(
@@ -119,6 +132,27 @@ def run_simulation (system, indx):
     print ('    FCI energy', molecule.fci_energy)
     print ('    CISD energy', molecule.cisd_energy)
     print ('    SCF (Hartree-Fock) energy', molecule.hf_energy)
+    
+    
+    
+    
+    
+    # Print commands. But this circuit is only up to the point where you prepare the wavefunction for the optimized amplitudes
+    print("\n \nCommand Printer \n")
+    compiler_engine = uccsd_trotter_engine(CommandPrinter())
+    wavefunction = compiler_engine.allocate_qureg(molecule.n_qubits)
+    for i in range(molecule.n_electrons):
+        X | wavefunction[i]
+    evolution_operator = uccsd_singlet_evolution(system.opt_amplitudes, 
+                                                 molecule.n_qubits, 
+                                                 molecule.n_electrons)
+    evolution_operator | wavefunction
+    compiler_engine.flush()
+    
+    
+    
+    
+    
     
 
 
