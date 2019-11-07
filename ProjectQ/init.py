@@ -63,8 +63,10 @@ class Atom():
         if self.stand_by_velocity is not None:
             self.velocity.append(self.stand_by_velocity)
     
-    def print_n_write(self):
+    def write_n_plot(self):
         if self.condition:
+            self.adjusted_position = [a+1/2*(b - a) for a, b in zip(self.position, self.position[1:])]
+
             print("Velocities: {}, #{}".format(self.velocity, len(self.velocity)))
             print("Positions: {}, #{}".format(self.position, len(self.position)))
             print("Ajusted Positions: {}, #{}".format(self.adjusted_position, len(self.adjusted_position)))
@@ -90,15 +92,11 @@ class Atom():
             f.write("VQE Forces: \n{}, #{} \n \n".format(self.VQE_forces, len(self.VQE_forces)))    
             f.write("UCCSD Energy: \n{}, #{} \n \n".format(self.UCCSD_energies, len(self.UCCSD_energies)))
             f.write("UCCSD Forces: \n{}, #{} \n \n".format(self.UCCSD_forces, len(self.UCCSD_forces)))
-        
-    def plot(self):
-        if self.condition: 
-            self.adjusted_position = [a+1/2*(b - a) for a, b in zip(self.position, self.position[1:])]
             
             # Plot Force Over Length
             f0 = plt.figure(0)
-            plt.plot(self.adjusted_position[-len(self.fci_forces):], self.fci_forces, color='blue', label='FCI Forces')
-            plt.plot(self.adjusted_position[-len(self.VQE_forces):], self.VQE_forces, color='orange', label='VQE Forces')
+            plt.plot(self.adjusted_position[-len(self.fci_forces):], self.fci_forces, color='blue', label='FCI Forces', linestyle = '-')
+            plt.plot(self.adjusted_position[-len(self.VQE_forces):], self.VQE_forces, color='orange', label='VQE Forces', linestyle = '-')
             plt.plot(self.adjusted_position[-len(self.UCCSD_forces):], self.UCCSD_forces, color='magenta', label='UCCSD Forces', linestyle = '--')
             plt.ylabel('Force in Hartree / Bohrs')
             plt.xlabel('Nuclei Position in au')
@@ -212,8 +210,7 @@ class System():
     
     def write_n_plot(self):
         for atom in self.atoms:
-            atom.print_n_write()
-            atom.plot()
+            atom.write_n_plot()
         
         if len(self.fci_energies) > 2:
             print("Velocity: {}".format(self.velocity))

@@ -14,12 +14,12 @@ def double_propogation(velocity):
     Sys.initalize_energy()
     
     while counter < 750 and Sys.in_boundary():
+        print("\n\nRunning Propogation #{}".format(counter))
         Sys.calculate_individual_energy(0)
         Sys.calculate_individual_energy(2)
         Sys.fill_standby()
         Sys.calculate_system_energy()
         counter += 1
-        print(counter)
     
     Sys.write_n_plot()
         
@@ -27,7 +27,6 @@ def double_propogation(velocity):
 
 double_propogation(0.0036)
 double_propogation(0.001)
-
 double_propogation(0.0008)
 double_propogation(0.0005)
 double_propogation(0.00036)

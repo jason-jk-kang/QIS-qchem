@@ -6,7 +6,7 @@ from openfermion.config import *
 from openfermionprojectq import *
 from openfermion.hamiltonians import MolecularData
 from openfermion.transforms import jordan_wigner, get_fermion_operator, get_sparse_operator
-from openfermion.utils import uccsd_singlet_paramsize
+from openfermion.utils import uccsd_singlet_paramsize, uccsd_singlet_get_packed_amplitudes
 from projectq.ops import X, All, Measure
 from projectq.backends import CommandPrinter, CircuitDrawer, IBMBackend
 from pyscf import mp, fci
@@ -27,7 +27,7 @@ def energy_objective(packed_amplitudes, molecule, qubit_hamiltonian, compiler_en
     for i in range(molecule.n_electrons):
         X | wavefunction[i]
 
-    # Build the circuit and act it on the wavefunction
+    # Prepares the wavefunction on our packed_amplitudes, generates a circuit
     evolution_operator = uccsd_singlet_evolution(packed_amplitudes,
                                                  molecule.n_qubits,
                                                  molecule.n_electrons)
@@ -44,7 +44,7 @@ def energy_objective(packed_amplitudes, molecule, qubit_hamiltonian, compiler_en
 def run_simulation (system, indx):
     # Load saved file for H3.
     basis = 'sto-3g'
-    spin = 2
+    spin = 1
 
     # Set Hamiltonian parameters.
     active_space_start = 1
@@ -59,7 +59,7 @@ def run_simulation (system, indx):
     delete_input = True
     delete_output = True
 
-    # Begin Running Simulation, Convert distance_counter to angstroms
+    # Begin Running Simulation, Convert distance_counter to angstroms 
     if indx == None:
         geometry = [('H', (0., 0., system.atoms[0].position[-1] * 0.529177249)),
                     ('H', (0., 0., system.atoms[1].position[-1] * 0.529177249)),
@@ -80,8 +80,8 @@ def run_simulation (system, indx):
                     ('H', (0., 0., system.atoms[2].stand_by_position * 0.529177249))]
 
     # Generate and populate instance of MolecularData.
-    molecule = MolecularData(geometry, basis, spin, description="h3")
-
+    molecule = MolecularData(geometry, basis, spin, charge = 1, description="h3")
+    
     molecule = run_pyscf(molecule,
                          run_scf=run_scf,
                          run_mp2=run_mp2,
@@ -90,22 +90,38 @@ def run_simulation (system, indx):
                          run_fci=run_fci)
 
     # Use a Jordan-Wigner encoding, and compress to remove 0 imaginary components
-    molecular_hamiltonian = molecule.get_molecular_hamiltonian(
-        occupied_indices=range(active_space_start),
-        active_indices=range(active_space_start, active_space_stop))
+    molecular_hamiltonian = molecule.get_molecular_hamiltonian()
 
     fermion_hamiltonian = get_fermion_operator(molecular_hamiltonian)
+    print(fermion_hamiltonian)
     qubit_hamiltonian = jordan_wigner(fermion_hamiltonian)
     qubit_hamiltonian.compress()
     compiler_engine = uccsd_trotter_engine()
-    initial_energy = energy_objective(system.opt_amplitudes, molecule, qubit_hamiltonian, compiler_engine)
+    
+    packed_amplitudes = uccsd_singlet_get_packed_amplitudes(
+           molecule.ccsd_single_amps,
+           molecule.ccsd_double_amps,
+           molecule.n_qubits,
+           molecule.n_electrons)    
+           
+    ## Initialize the VQE with UCCSD amplitudes
+    UCCSD_amplitudes = array(packed_amplitudes)*(-1.)
+    initial_energy = energy_objective(UCCSD_amplitudes, molecule, qubit_hamiltonian, compiler_engine)
+    print ('    Initial energy UCCSD:', molecule.ccsd_energy)
+    print ('    Initial amplitude UCCSD:', UCCSD_amplitudes)
 
     # Run VQE Optimization to find new CCSD parameters
-    opt_result = minimize(energy_objective, system.opt_amplitudes, (molecule, qubit_hamiltonian, compiler_engine), method="CG", options={'disp':True})
-
-    opt_energy, system.opt_amplitudes = opt_result.fun, opt_result.x
+    opt_result = minimize(energy_objective, UCCSD_amplitudes, (molecule, qubit_hamiltonian, compiler_engine), method="CG", options={'disp':True})
     
-    ## Can I pull amplitudes from FCI or CCSD?????
+    opt_energy, system.opt_amplitudes = opt_result.fun, opt_result.x    
+    print ('    Final energy VQE', opt_energy)
+    print ('    Final amplitude VQE', system.opt_amplitudes)
+    print ('    FCI energy', molecule.fci_energy)
+    print ('    CISD energy', molecule.cisd_energy)
+    print ('    SCF (Hartree-Fock) energy', molecule.hf_energy)
+    
+
 
     return ({"Name" : molecule.name, "VQE Energy" : opt_energy,
              "FCI Energy" : molecule.fci_energy, "UCCSD Energy": molecule.ccsd_energy})
+             

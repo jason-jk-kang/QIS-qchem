@@ -14,15 +14,15 @@ def triple_propogation(velocity_1,velocity_2,velocity_3):
     Sys.initalize_energy()
     
     while counter < 750 and Sys.in_boundary():
+        print("\n\nRunning Propogation #{}".format(counter))
         Sys.calculate_individual_energy(0)
         Sys.calculate_individual_energy(1)
         Sys.calculate_individual_energy(2)
         Sys.fill_standby()
         Sys.calculate_system_energy()
         counter += 1
-        print(counter)
     
     Sys.write_n_plot()
         
 
-triple_propogation(0.008, -0.003, -0.005)
+triple_propogation(0.0008, -0.0003, -0.0005)
