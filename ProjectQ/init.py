@@ -160,8 +160,8 @@ class System():
         self.fci_energies.append(results["FCI Energy"])
         self.VQE_energies.append(results["VQE Energy"])
         self.UCCSD_energies.append(results["UCCSD Energy"])
-        print("""Energy for system {} initialized at: \n 
-        FCI: {} \n VQE: {} \n UCCSD: {}""".format(self.name, results["FCI Energy"], results["VQE Energy"], results["UCCSD Energy"]))
+        print("""Energy for system {} initialized at: \n FCI: {} \n VQE: {} \n UCCSD: {}""".format(self.name, results["FCI Energy"], results["VQE Energy"], results["UCCSD Energy"]))
+
     
     # update every atom in the system to their standby info
     def fill_standby(self):
@@ -191,11 +191,11 @@ class System():
             self.VQE_energies.append(results["VQE Energy"])
     
     # for a single index, propogate this atom and calculate the energy level        
-    def calculate_individual_energy(self, indx):
+    def calculate_individual_energy(self, indx, commandprinter = False):
         self.atoms[indx].update_forces()
         self.atoms[indx].propogate()
             
-        results = run_simulation(self, indx)
+        results = run_simulation(self, indx, commandprinter)
 
         self.atoms[indx].fci_energies.append(results["FCI Energy"])
         self.atoms[indx].VQE_energies.append(results["VQE Energy"])

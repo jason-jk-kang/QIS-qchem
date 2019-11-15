@@ -23,7 +23,7 @@ def energy_objective(packed_amplitudes, molecule, qubit_hamiltonian, compiler_en
         energy(float): Energy corresponding to the given amplitudes
     """
     os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
-    # Set Jordan-Wigner initial state with correct number of electrons
+    # Set Jordan-Wigner initial state with correct number of electrons, hartree fock state
     wavefunction = compiler_engine.allocate_qureg(molecule.n_qubits)
     for i in range(molecule.n_electrons):
         X | wavefunction[i]
@@ -47,7 +47,7 @@ def energy_objective(packed_amplitudes, molecule, qubit_hamiltonian, compiler_en
     return energy
     
 
-def run_simulation (system, indx):
+def run_simulation (system, indx, commandprinter = False):
     # Load saved file for H3.
     basis = 'sto-3g'
     spin = 1
@@ -133,28 +133,18 @@ def run_simulation (system, indx):
     print ('    CISD energy', molecule.cisd_energy)
     print ('    SCF (Hartree-Fock) energy', molecule.hf_energy)
     
-    
-    
-    
-    
-    # Print commands. But this circuit is only up to the point where you prepare the wavefunction for the optimized amplitudes
-    print("\n \nCommand Printer \n")
-    compiler_engine = uccsd_trotter_engine(CommandPrinter())
-    wavefunction = compiler_engine.allocate_qureg(molecule.n_qubits)
-    for i in range(molecule.n_electrons):
-        X | wavefunction[i]
-    evolution_operator = uccsd_singlet_evolution(system.opt_amplitudes, 
-                                                 molecule.n_qubits, 
-                                                 molecule.n_electrons)
-    evolution_operator | wavefunction
-    compiler_engine.flush()
-    
-    
-    
-    
-    
-    
-
+    if commandprinter:
+        with open('commands.txt', 'a') as f:
+            # Print commands. But this circuit is only up to the point where you prepare the wavefunction for the optimized amplitudes
+            compiler_engine = uccsd_trotter_engine(CommandPrinter())
+            wavefunction = compiler_engine.allocate_qureg(molecule.n_qubits)
+            for i in range(molecule.n_electrons):
+                X | wavefunction[i]
+            evolution_operator = uccsd_singlet_evolution(system.opt_amplitudes, 
+                                                         molecule.n_qubits, 
+                                                         molecule.n_electrons)
+            evolution_operator | wavefunction
+            compiler_engine.flush()
 
     return ({"Name" : molecule.name, "VQE Energy" : opt_energy,
              "FCI Energy" : molecule.fci_energy, "UCCSD Energy": molecule.ccsd_energy})
