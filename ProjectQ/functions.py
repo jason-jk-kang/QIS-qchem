@@ -1,6 +1,7 @@
 import os
 from numpy import array, concatenate, zeros
 from numpy.random import randn
+from qiskit import *
 from scipy.optimize import minimize
 from openfermion.config import *
 from openfermionprojectq import *
@@ -9,6 +10,7 @@ from openfermion.transforms import jordan_wigner, get_fermion_operator, get_spar
 from openfermion.utils import uccsd_singlet_paramsize, uccsd_singlet_get_packed_amplitudes
 from projectq.ops import X, All, Measure
 from projectq.backends import CommandPrinter, CircuitDrawer, IBMBackend, Simulator
+from openqasm import OpenQASMEngine
 from pyscf import mp, fci
 import matplotlib.pyplot as plt
 from openfermionpyscf import run_pyscf
@@ -135,8 +137,9 @@ def run_simulation (system, indx, commandprinter = False):
     
     if commandprinter:
         with open('commands.txt', 'a') as f:
+            backend = OpenQASMEngine()
             # Print commands. But this circuit is only up to the point where you prepare the wavefunction for the optimized amplitudes
-            compiler_engine = uccsd_trotter_engine(CommandPrinter())
+            compiler_engine = uccsd_trotter_engine(backend)
             wavefunction = compiler_engine.allocate_qureg(molecule.n_qubits)
             for i in range(molecule.n_electrons):
                 X | wavefunction[i]
@@ -145,6 +148,7 @@ def run_simulation (system, indx, commandprinter = False):
                                                          molecule.n_electrons)
             evolution_operator | wavefunction
             compiler_engine.flush()
+            print(backend.circuit.qasm())
 
     return ({"Name" : molecule.name, "VQE Energy" : opt_energy,
              "FCI Energy" : molecule.fci_energy, "UCCSD Energy": molecule.ccsd_energy})
