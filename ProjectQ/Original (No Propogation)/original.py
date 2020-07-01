@@ -16,6 +16,8 @@ from openfermion.utils import uccsd_singlet_paramsize, uccsd_singlet_get_packed_
 from projectq.ops import X, All, Measure
 from projectq.backends import CommandPrinter, CircuitDrawer
 
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 from openfermionpyscf import run_pyscf
@@ -35,7 +37,6 @@ def energy_objective(packed_amplitudes):
         energy(float): Energy corresponding to the given amplitudes
     """
     os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
-
     # Set Jordan-Wigner initial state with correct number of electrons
     wavefunction = compiler_engine.allocate_qureg(molecule.n_qubits)
     for i in range(molecule.n_electrons):
@@ -78,16 +79,8 @@ run_fci = 1
 delete_input = True
 delete_output = True
 
-
-'''
-# # # # # # # # # # # # # # # # # # # # # # # # # # # #
-# Different ways to choose our initial Amplitudes
-# # # # # # # # # # # # # # # # # # # # # # # # # # # #
-'''
 # Naive initial guess
-amplitudes = [0.01] * 5
-'# # # # # # # # # # # # # # # # # # # # # # # # # # # #'
-
+opt_amplitudes = [0.01] * 5
 
 f = open('ProjectQ-h3-results.txt', 'w')
 
@@ -106,83 +99,79 @@ for point in range(1, n_points + 1):
                          run_ccsd=run_ccsd,
                          run_fci=run_fci)
 
-    # Get the Hamiltonian in an active space.
-    molecular_hamiltonian = molecule.get_molecular_hamiltonian(
-        occupied_indices=range(active_space_start),
-        active_indices=range(active_space_start, active_space_stop))
+    # # Get the Hamiltonian in an active space.
+    # molecular_hamiltonian = molecule.get_molecular_hamiltonian(
+    #     occupied_indices=range(active_space_start),
+    #     active_indices=range(active_space_start, active_space_stop))
 
-    # Map operator to fermions and qubits.
+    molecular_hamiltonian = molecule.get_molecular_hamiltonian()
+
+    # Map operator to fermions and qubits. Compress to remove 0 entries.
     fermion_hamiltonian = get_fermion_operator(molecular_hamiltonian)
     qubit_hamiltonian = jordan_wigner(fermion_hamiltonian)
-
-    # compress removes 0 entries. qubit_hamiltonian is a qubit_operator
     qubit_hamiltonian.compress()
-
     compiler_engine = uccsd_trotter_engine()
 
-    '''
-    # This resets the amplitudes to be naive guess every time
-    n_amplitudes = uccsd_singlet_paramsize(molecule.n_qubits, molecule.n_electrons)
-    initial_amplitudes = [0.01] * n_amplitudes
-    '''
-    initial_energy = energy_objective(amplitudes)
+    ' # # # # # # # # # # # # # # # # # # # # # # # # # # # '
+    ' Here we choose how we initialize our amplitudes '
 
-    # Choosing UCCSD amplitudes, nearly perfect
+    # # Naive guess as reference state
+    # n_amplitudes = uccsd_singlet_paramsize(molecule.n_qubits, molecule.n_electrons)
+    # reference_state = [0.01] * n_amplitudes
+    # print(f"Reference State naive guess: {reference_state}")
+
+    # # Previous optima as reference state
+    # reference_state = opt_amplitudes
+    # print(f"Reference State previous optima: {reference_state}")
+
+    # UCCSD amplitudes as reference state
     packed_amplitudes = uccsd_singlet_get_packed_amplitudes(
-               molecule.ccsd_single_amps,
-               molecule.ccsd_double_amps,
-               molecule.n_qubits,
-               molecule.n_electrons)
+           molecule.ccsd_single_amps,
+           molecule.ccsd_double_amps,
+           molecule.n_qubits,
+           molecule.n_electrons)
 
-    amplitudes = array(packed_amplitudes)*(-1.)
+    # Initialize the VQE with UCCSD amplitudes
+    reference_state = array(packed_amplitudes)*(-1.)
+    print (f'Reference State UCCSD amplitudes: {reference_state}')
+
+    ' # # # # # # # # # # # # # # # # # # # # # # # # # # # '
 
     # Run VQE Optimization to find new CCSD parameters
-    opt_result = minimize(energy_objective, amplitudes,
+    opt_result = minimize(energy_objective, reference_state,
                           method="CG", options={'disp':True})
 
     opt_energy, opt_amplitudes = opt_result.fun, opt_result.x
 
-    'This chooses our initial guess for the next iteration as the optimal amplitudes of the last iteration'
-    amplitudes = opt_amplitudes
+
+
     fci_energies += [float(molecule.fci_energy)]
     VQE_energies += [float(opt_energy)]
 
     # Write Results
     f = open('ProjectQ-h3-results.txt', 'a')
-    f.write("Results for {} at bond length {}:\n".format(molecule.name, str(bond_length)))
-    f.write("Optimal VQE Energy: {} \n".format(str(opt_energy)))
-    f.write("Optimal VQE Amplitudes: ")
-    for item in opt_amplitudes:
-        f.write("{} ".format(str(item)))
-    f.write("\n")
-
-    f.write("Exact FCI Energy: {} Hartrees \n".format(str(float(molecule.fci_energy))))
-    f.write("Initial Energy of VQE: {} Hartrees \n\n".format(str(float(initial_energy))))
-
+    f.write(f"Results at position {bond_length} \n")
+    f.write(f"VQE Amplitudes: {opt_amplitudes} \n")
+    f.write(f"VQE Energy: {opt_energy} \n")
+    f.write(f"FCI Energy: {molecule.fci_energy} Hartrees \n \n")
     f.close
 
     # Print Results
-    print("\nResults for {} at bond length {}:".format(molecule.name, str(bond_length)))
-    print("Optimal VQE Energy: {}".format(opt_energy))
-    print("Optimal VQE Amplitudes: {}".format(opt_amplitudes))
-    print("Classical CCSD Energy: {} Hartrees".format(molecule.ccsd_energy))
-    print("Exact FCI Energy: {} Hartrees".format(molecule.fci_energy))
-    print("Initial Energy: {} Hartrees\n\n".format(initial_energy))
-
-
+    print(f"Results at position {bond_length}:")
+    print(f"VQE Amplitudes: {opt_amplitudes}")
+    print(f"VQE Energy: {opt_energy}")
+    print(f"FCI Energy: {molecule.fci_energy} Hartrees \n \n")
 
 # plot energies
 f1 = plt.figure(0)
-plt.plot(bond_lengths, fci_energies, ':', color = 'blue', label = "FCI")
 plt.plot(bond_lengths, VQE_energies, '-', color = 'orange', label = "VQE")
+plt.plot(bond_lengths, fci_energies, ':', color = 'blue', label = "FCI")
 plt.ylabel('Energy in Hartree')
 plt.xlabel('Position of h2 atom in angstrom')
 plt.legend()
+plt.tight_layout()
 
 plt.savefig("ProjectQ-Original-energy-graph", dpi=400, orientation='portrait')
-
-plt.show()
-
 
 energy_delta = [b - a for a, b in zip(fci_energies, fci_energies[1:])]
 print ("This is the energy_delta:", energy_delta)
@@ -196,11 +185,10 @@ print ("This is the force:", force)
 lengths = [a + 1/2*(b - a) for a, b in zip(bond_lengths, bond_lengths[1:])]
 print ("This is the lengths:",lengths)
 
-f2 = plt.figure(0)
+f2 = plt.figure(1)
 plt.plot(lengths, force, '-')
 plt.ylabel('Force in Hartree / angstrom')
 plt.xlabel('Position of h2 atom in angstrom')
+plt.tight_layout()
 
 plt.savefig("ProjectQ-Original-force-graph", dpi=400, orientation='portrait')
-
-plt.show()

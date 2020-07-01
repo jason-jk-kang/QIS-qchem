@@ -15,7 +15,7 @@ def single_propogation(velocity):
 
     while counter < 1000 and Sys.in_boundary():
         print("\n\nRunning Propogation #{}".format(counter))
-        Sys.calculate_individual_energy(1, commandprinter = True)
+        Sys.calculate_individual_energy(1)
         Sys.fill_standby()
         counter += 1
 

@@ -22,7 +22,7 @@ now = datetime.now().strftime("%m/%d/%Y %H:%M")
 
 class Atom():
     # Initial Information Computed by FCI on nuclei position 1.51178 bohrs. velocity at 300K approx .394
-    # Position in au, but converted to angstroms when I run my VQE
+    # Position in au, but converted to angstroms when I load into openfermion
     def __init__(self, name, indx, velocity, position, condition):
         self.name = name
         self.indx = indx
@@ -93,8 +93,8 @@ class Atom():
 
             # Plot Force Over Length
             f0 = plt.figure(0)
-            plt.plot(self.adjusted_position[-len(self.fci_forces):], self.fci_forces, color='blue', label='FCI Forces', linestyle = ':')
             plt.plot(self.adjusted_position[-len(self.VQE_forces):], self.VQE_forces, color='orange', label='VQE Forces', linestyle = '-')
+            plt.plot(self.adjusted_position[-len(self.fci_forces):], self.fci_forces, color='blue', label='FCI Forces', linestyle = ':')
             # plt.plot(self.adjusted_position[-len(self.CCSD_forces):], self.CCSD_forces, color='magenta', label='CCSD Forces', linestyle = '--')
             plt.ylabel('Force in Hartree / Bohrs')
             plt.xlabel('Nuclei Position in au')
@@ -104,8 +104,8 @@ class Atom():
 
             # Plot Energy Over Length
             f1 = plt.figure(1)
-            plt.plot(self.position[-len(self.fci_energies):], self.fci_energies, color='blue', label='FCI Energy', linestyle = ':')
             plt.plot(self.position[-len(self.VQE_energies):], self.VQE_energies, color='orange', label='VQE Energy', linestyle = '-')
+            plt.plot(self.position[-len(self.fci_energies):], self.fci_energies, color='blue', label='FCI Energy', linestyle = ':')
             # plt.plot(self.position[-len(self.CCSD_energies):], self.CCSD_energies, color='magenta', label='CCSD Energy', linestyle = '--')
             plt.ylabel('Energy in Hartree')
             plt.xlabel('Nuclei Position in au')
@@ -149,6 +149,8 @@ class System():
         self.velocity = max(atom.velocity[-1] for atom in self.atoms)
 
     def initalize_energy(self):
+        print("Initializing System Energy")
+
         results = run_simulation(self, None)
         for atom in self.atoms:
             atom.fci_energies.append(results["FCI Energy"])
@@ -166,27 +168,27 @@ class System():
         for atom in self.atoms:
             atom.fill_standby()
 
-    # Can I combine individual energy to system energy?
-    def calculate_energy(self):
-        propogating_atoms = [atom for atom in self.atoms if atom.condition]
-        for atom in propogating_atoms:
-            self.atoms[indx].update_forces()
-            self.atoms[indx].propogate()
-
-            results = run_simulation(self, indx)
-
-            self.atoms[indx].fci_energies.append(results["FCI Energy"])
-            self.atoms[indx].VQE_energies.append(results["VQE Energy"])
-            self.atoms[indx].CCSD_energies.append(results["CCSD Energy"])
-
-        self.fill_standby
-
-        if len(propogating_atoms) > 1:
-            results = run_simulation(self, None)
-
-            self.CCSD_energies.append(results["CCSD Energy"])
-            self.fci_energies.append(results["FCI Energy"])
-            self.VQE_energies.append(results["VQE Energy"])
+    # # Can I combine individual energy to system energy?
+    # def calculate_energy(self):
+    #     propogating_atoms = [atom for atom in self.atoms if atom.condition]
+    #     for atom in propogating_atoms:
+    #         self.atom.update_forces()
+    #         self.atom.propogate()
+    #
+    #         results = run_simulation(self, indx)
+    #
+    #         self.atom.fci_energies.append(results["FCI Energy"])
+    #         self.atom.VQE_energies.append(results["VQE Energy"])
+    #         self.atom.CCSD_energies.append(results["CCSD Energy"])
+    #
+    #     self.fill_standby
+    #
+    #     if len(propogating_atoms) > 1:
+    #         results = run_simulation(self, None)
+    #
+    #         self.CCSD_energies.append(results["CCSD Energy"])
+    #         self.fci_energies.append(results["FCI Energy"])
+    #         self.VQE_energies.append(results["VQE Energy"])
 
     # for a single index, propogate this atom and calculate the energy level
     def calculate_individual_energy(self, indx, commandprinter = False):
@@ -232,8 +234,8 @@ class System():
                 clock += [clock[-1] + self.time]
 
             f1 = plt.figure(1)
-            plt.plot(clock, self.fci_energies, color='blue', label='FCI Energy', linestyle = ':')
             plt.plot(clock, self.VQE_energies, color='orange', label='VQE Energy', linestyle = '-')
+            plt.plot(clock, self.fci_energies, color='blue', label='FCI Energy', linestyle = ':')
             # plt.plot(clock, self.CCSD_energies, color='magenta', label='CCSD Energy', linestyle = ':')
             plt.ylabel('Energy in Hartree')
             plt.xlabel('Time in au')

@@ -42,15 +42,10 @@ def energy_objective(packed_amplitudes, molecule, qubit_hamiltonian, compiler_en
     evolution_operator = uccsd_singlet_evolution(packed_amplitudes,
                                                  molecule.n_qubits,
                                                  molecule.n_electrons)
-
-    # print("what is this,", type(evolution_operator))
-    # print("Evolution Operator")
-    # print(evolution_operator)
     evolution_operator | wavefunction
     compiler_engine.flush()
 
     # Evaluate the energy and reset wavefunction
-    # print("Qubit Hamiltonian", qubit_hamiltonian)
     energy = compiler_engine.backend.get_expectation_value(qubit_hamiltonian, wavefunction)
     All(Measure) | wavefunction
     compiler_engine.flush()
@@ -109,43 +104,35 @@ def run_simulation (system, indx, commandprinter = False):
     molecular_hamiltonian = molecule.get_molecular_hamiltonian()
 
     fermion_hamiltonian = get_fermion_operator(molecular_hamiltonian)
-    # print(fermion_hamiltonian)
     qubit_hamiltonian = jordan_wigner(fermion_hamiltonian)
     qubit_hamiltonian.compress()
-
-    # # Messing with Engines
-    # backend = IBMBackend()
-    # compiler_engine = uccsd_trotter_engine(backend)
-    # cmd_printer = CommandPrinter()
-    # insert_engine(backend, cmd_printer)
-
     compiler_engine = uccsd_trotter_engine()
 
-
-    '''Here we choose how we initialize our amplitudes'''
+    ' Here we choose how we initialize our amplitudes '
     # packed_amplitudes = uccsd_singlet_get_packed_amplitudes(
     #        molecule.ccsd_single_amps,
     #        molecule.ccsd_double_amps,
     #        molecule.n_qubits,
     #        molecule.n_electrons)
     #
-    # ## Initialize the VQE with UCCSD amplitudes
-    # UCCSD_amplitudes = array(packed_amplitudes)*(-1.)
-    # initial_energy = energy_objective(UCCSD_amplitudes, molecule, qubit_hamiltonian, compiler_engine)
-    # print ('    Initial energy CCSD:', molecule.ccsd_energy)
-    # print ('    Initial UCCSD amplitudes:', UCCSD_amplitudes)
+    # # Initialize the VQE with UCCSD amplitudes
+    # reference_state = array(packed_amplitudes)*(-1.)
+    # print ('Reference State UCCSD amplitudes:', reference_state)
 
-    '# # # # # # # # # # # # # # # # # # # # # # # # # # # '
+    # Initialize the VQE with previous optimal amplitudes
+    reference_state = system.opt_amplitudes
+    print(f"Reference State previous optima: {system.opt_amplitudes}")
+
+    ' # # # # # # # # # # # # # # # # # # # # # # # # # # # '
 
     # Run VQE Optimization to find new CCSD parameters
-    opt_result = minimize(energy_objective, system.opt_amplitudes, (molecule, qubit_hamiltonian, compiler_engine), method="CG", options={'disp':True})
-
+    opt_result = minimize(energy_objective, reference_state, (molecule, qubit_hamiltonian, compiler_engine), method="CG", options={'disp':True})
     opt_energy, system.opt_amplitudes = opt_result.fun, opt_result.x
-    print ('    Final energy VQE', opt_energy)
-    print ('    Final amplitude VQE', system.opt_amplitudes)
-    print ('    FCI energy', molecule.fci_energy)
-    print ('    CISD energy', molecule.cisd_energy)
-    print ('    SCF (Hartree-Fock) energy', molecule.hf_energy)
+    print (f'VQE Final amplitude: {system.opt_amplitudes}')
+    print (f'VQE energy: {opt_energy}')
+    print (f'FCI energy: {molecule.fci_energy}')
+    print (f'CCSD energy: {molecule.ccsd_energy}')
+    print (f'SCF (Hartree-Fock) energy: {molecule.hf_energy}')
 
     if commandprinter:
         with open('commands.txt', 'a') as f:
@@ -160,7 +147,6 @@ def run_simulation (system, indx, commandprinter = False):
                                                          molecule.n_electrons)
             evolution_operator | wavefunction
             compiler_engine.flush()
-            print(type(backend.circuit))
             print(backend.circuit.qasm())
 
     return ({"Name" : molecule.name, "VQE Energy" : opt_energy,
