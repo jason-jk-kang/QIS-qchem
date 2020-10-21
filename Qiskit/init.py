@@ -159,18 +159,19 @@ class System():
         return all([abs(atom.position[-1]) < 10 for atom in self.atoms])
 
     def max_iters(self):
-        self.iters = max([len(atom.position) for atom in self.atoms]) - 1
+        self.iters = max([len(atom.position) for atom in self.atoms])
 
     def write_n_plot(self):
         self.max_iters()
 
         # Plot Atom Position Over Time
-        clock = [self.time * iter for iter in range(1, self.iters + 1)]
+        clock = [self.time * i for i in range(1, self.iters + 1)]
 
-        f1 = plt.figure(1)
         for atom in self.atoms:
+            atom.write_n_plot()
             atom.position = atom.position + [atom.position[-1]] * (len(clock) - len(atom.position))
 
+        f1 = plt.figure(1)
         plt.plot(clock, self.atoms[0].position, 'blue', label='Nuclei 1')
         plt.plot(clock, self.atoms[1].position, 'cyan', label='Nuclei 2')
         plt.plot(clock, self.atoms[2].position, 'magenta', label='Nuclei 3')
@@ -179,9 +180,6 @@ class System():
         plt.legend(frameon=False, loc='upper center', ncol=2, prop={'size': 10})
         plt.savefig("{}-System-{}-Position.png".format(self.velocity, self.name), dpi=400, orientation='portrait', bbox_inches='tight')
         plt.close()
-
-        for atom in self.atoms:
-            atom.write_n_plot()
 
         if len(self.exact_energies) > 2:
             f = open("{}-{}-Results.txt".format(self.velocity, self.name), 'a')
